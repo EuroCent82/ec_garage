@@ -61,22 +61,3 @@ RegisterNUICallback('close', function(_, cb)
     ECGarage.UI.Close()
     cb('ok')
 end)
-
-RegisterCommand('creategarage', function()
-    if ECGarage.UI.IsOpen() then
-        ECGarage.UI.Close()
-        return
-    end
-    ECGarage.UI.OpenCreator()
-end, false)
-
-RegisterCommand('garageui', function(_, args)
-    if ECGarage.UI.IsOpen() then
-        ECGarage.UI.Close()
-        return
-    end
-    ECGarage.UI.OpenGarage({
-        mode = args[1] or 'land',
-        garageName = 'Garage',
-    })
-end, false)

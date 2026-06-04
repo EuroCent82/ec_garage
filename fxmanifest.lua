@@ -39,6 +39,7 @@ files {
 
 client_scripts {
     'client/ui.lua',
+    'client/commands.lua',
     'client/world.lua',
     'client/garage.lua',
     'client/creator_bridge.lua',
