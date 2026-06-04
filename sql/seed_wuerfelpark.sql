@@ -5,7 +5,7 @@ SET NAMES utf8mb4;
 
 INSERT INTO `ec_garages` (
     `id`, `name`, `type`, `interact`, `park_mode`, `park_radius`,
-    `blip_enabled`, `blip_sprite`, `blip_color`, `blip_label`, `enabled`, `created_by`
+    `blip_enabled`, `blip_sprite`, `blip_color`, `blip_label`, `prop`, `enabled`, `created_by`
 ) VALUES (
     'wuerfelpark',
     'Würfelpark Garage',
@@ -13,12 +13,15 @@ INSERT INTO `ec_garages` (
     JSON_OBJECT('x', 884.88, 'y', -43.56, 'z', 78.76, 'h', 58.0),
     'zone',
     42.0,
-    1, 357, 3, 'Würfelpark', 1, 'seed'
+    1, 357, 3, 'Würfelpark',
+    JSON_OBJECT('enabled', true, 'model', 'prop_park_ticket_01', 'x', 885.35, 'y', -42.18, 'z', 78.76, 'h', 238.0),
+    1, 'seed'
 ) ON DUPLICATE KEY UPDATE
     `name` = VALUES(`name`),
     `interact` = VALUES(`interact`),
     `park_radius` = VALUES(`park_radius`),
     `blip_label` = VALUES(`blip_label`),
+    `prop` = VALUES(`prop`),
     `updated_at` = CURRENT_TIMESTAMP;
 
 DELETE FROM `ec_garage_slots` WHERE `garage_id` = 'wuerfelpark';

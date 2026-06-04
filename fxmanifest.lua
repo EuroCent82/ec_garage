@@ -13,6 +13,7 @@ shared_scripts {
     'shared/init.lua',
     'config.lua',
     'config/garages.lua',
+    'shared/garage.lua',
 }
 
 files {
@@ -38,7 +39,9 @@ files {
 
 client_scripts {
     'client/ui.lua',
+    'client/world.lua',
     'client/garage.lua',
+    'client/creator_bridge.lua',
 }
 
 server_scripts {

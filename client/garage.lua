@@ -30,7 +30,7 @@ CreateThread(function()
                             false, false, 2, false, nil, nil, false
                         )
                         if dist < interactDist then
-                            showHelp('Drücke ~INPUT_CONTEXT~ für ~b~' .. garage.name .. '~s~')
+                            showHelp('Drücke ~INPUT_CONTEXT~ für ~b~' .. (garage.blipLabel or garage.name) .. '~s~')
                             if IsControlJustReleased(0, 38) then
                                 ECGarage.UI.OpenGarage({
                                     mode = garage.type or 'land',

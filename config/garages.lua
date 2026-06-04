@@ -1,5 +1,4 @@
---- Fallback/Ladevorschau bis DB-Sync aktiv ist (Creator-Format)
---- Produktiv: ec_garages + ec_garage_slots (sql/seed_wuerfelpark.sql)
+--- Garagen (erste Garage: Würfelpark) — Creator & Map nutzen dieselben Daten
 
 GarageSeed = {
     {
@@ -17,8 +16,18 @@ GarageSeed = {
         parkRadius = 42.0,
         parkSlots = {},
         blipEnabled = true,
+        blipSprite = 357,
+        blipColor = 3,
         blipLabel = 'Würfelpark',
         job = '',
         minGrade = 0,
+        prop = {
+            enabled = true,
+            model = 'prop_park_ticket_01',
+            x = 885.35,
+            y = -42.18,
+            z = 78.76,
+            h = 238.0,
+        },
     },
 }

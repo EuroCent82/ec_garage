@@ -25,57 +25,62 @@ function emptyGarage(overrides = {}) {
     parkSlots: [],
     blipEnabled: true,
     blipLabel: '',
+    blipSprite: 357,
+    blipColor: 3,
     job: '',
     minGrade: 0,
+    propEnabled: false,
+    propModel: 'prop_park_ticket_01',
+    prop: null,
     ...overrides,
   };
 }
 
+function normalizeGarage(raw) {
+  const prop = raw.prop;
+  const propEnabled = prop?.enabled ?? raw.propEnabled ?? false;
+  const propModel = prop?.model || raw.propModel || 'prop_park_ticket_01';
+  return emptyGarage({
+    ...raw,
+    propEnabled,
+    propModel,
+    prop: propEnabled && prop
+      ? { x: prop.x, y: prop.y, z: prop.z, h: prop.h ?? 0, model: propModel, enabled: true }
+      : null,
+  });
+}
+
+function nuiResource() {
+  return typeof GetParentResourceName === 'function' ? GetParentResourceName() : 'ec_garage';
+}
+
+async function fetchCoords() {
+  if (typeof GetParentResourceName !== 'function') {
+    return { ...state.placementPos };
+  }
+  const res = await fetch(`https://${nuiResource()}/getCoords`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: '{}',
+  });
+  return res.json();
+}
+
+function setPlacementActive(active) {
+  if (typeof GetParentResourceName !== 'function') return;
+  fetch(`https://${nuiResource()}/setPlacementActive`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ active }),
+  }).catch(() => {});
+}
+
 const state = {
-  garages: [
-    emptyGarage({
-      id: 1,
-      name: 'Legion Square Garage',
-      type: 'land',
-      interact: { x: 215.12, y: -810.45, z: 30.73, h: 0 },
-      spawnSlots: [
-        { x: 222.4, y: -804.2, z: 30.65, h: 160.0 },
-        { x: 218.1, y: -804.5, z: 30.65, h: 160.0 },
-      ],
-      parkMode: 'zone',
-      parkRadius: 30,
-      blipLabel: 'Legion Garage',
-    }),
-    emptyGarage({
-      id: 2,
-      name: 'LSIA Hangar',
-      type: 'air',
-      interact: { x: -1267.0, y: -3012.5, z: 13.94, h: 0 },
-      spawnSlots: [{ x: -1275.2, y: -3005.8, z: 13.94, h: 330.0 }],
-      parkMode: 'slot',
-      parkSlots: [{ x: -1275.2, y: -3005.8, z: 13.94, h: 330.0 }],
-      blipLabel: 'LSIA Hangar',
-    }),
-    emptyGarage({
-      id: 'wuerfelpark',
-      name: 'Würfelpark Garage',
-      type: 'land',
-      interact: { x: 884.88, y: -43.56, z: 78.76, h: 58.0 },
-      spawnSlots: [
-        { x: 895.20, y: -35.80, z: 78.76, h: 328.0 },
-        { x: 899.50, y: -30.20, z: 78.76, h: 328.0 },
-        { x: 903.80, y: -24.50, z: 78.76, h: 328.0 },
-        { x: 908.10, y: -18.90, z: 78.76, h: 328.0 },
-      ],
-      parkMode: 'zone',
-      parkRadius: 42,
-      blipLabel: 'Würfelpark',
-    }),
-  ],
-  activeGarageId: 'wuerfelpark',
+  garages: [],
+  activeGarageId: null,
   step: 0,
   placement: null,
-  placementPos: { x: 215.0, y: -810.0, z: 30.7, h: 0 },
+  placementPos: { x: 884.88, y: -43.56, z: 78.76, h: 58.0 },
 };
 
 const $ = (s) => document.querySelector(s);
@@ -173,6 +178,32 @@ function renderInteract(g) {
           ${TYPE_ICONS.land}
           <p>Noch keine Position gesetzt.<br/>Gehe ingame zur Stelle und klicke „Aktuelle Position".</p>
         </div>`}
+    </div>
+    <div class="pos-card" style="margin-top:16px">
+      <div class="pos-card-head">
+        <h3>Welt-Objekt (optional)</h3>
+        <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:13px">
+          <input type="checkbox" id="f-prop-enabled" ${g.propEnabled ? 'checked' : ''} />
+          Prop spawnen
+        </label>
+      </div>
+      <p class="field-hint" style="margin-bottom:12px">z.&nbsp;B. Ticketautomat <code>prop_park_ticket_01</code> an fester Position</p>
+      <div class="field" style="margin-bottom:12px">
+        <label>Prop-Modell</label>
+        <input class="input" id="f-prop-model" value="${g.propModel || 'prop_park_ticket_01'}" placeholder="prop_park_ticket_01" ${g.propEnabled ? '' : 'disabled'} />
+      </div>
+      ${g.propEnabled && g.prop ? `
+        <div class="pos-coords">
+          <div class="pos-coord set"><span>X</span><strong>${fmt(g.prop.x)}</strong></div>
+          <div class="pos-coord set"><span>Y</span><strong>${fmt(g.prop.y)}</strong></div>
+          <div class="pos-coord set"><span>Z</span><strong>${fmt(g.prop.z)}</strong></div>
+          <div class="pos-coord set"><span>H</span><strong>${fmt(g.prop.h, 1)}°</strong></div>
+        </div>
+        <button class="btn btn-ghost" data-action="place-slot" data-target="prop">Position im Hologramm-Modus bearbeiten</button>
+      ` : ''}
+      <button class="btn btn-success" data-action="take-pos-prop" style="margin-top:10px" ${g.propEnabled ? '' : 'disabled'}>
+        ${ICONS.mapPin()} Aktuelle Position (Prop)
+      </button>
     </div>${stepNavButtons()}`;
 }
 
@@ -298,6 +329,11 @@ function renderReview(g) {
         <h4>Zugriff</h4>
         <p>${g.job ? g.job + ' (Rang ' + g.minGrade + '+)' : 'Öffentlich'}</p>
       </div>
+      <div class="review-card">
+        <h4>Welt-Objekt</h4>
+        <p>${g.propEnabled && g.prop ? g.propModel : 'Keins'}</p>
+        <p class="sub">${g.prop ? fmtCoord(g.prop) : ''}</p>
+      </div>
     </div>${stepNavButtons()}`;
 }
 
@@ -347,6 +383,18 @@ function bindStepEvents() {
   const gradeEl = $('#f-grade');
   if (gradeEl) gradeEl.oninput = (e) => { g.minGrade = parseInt(e.target.value, 10) || 0; };
 
+  const propEnabledEl = $('#f-prop-enabled');
+  if (propEnabledEl) {
+    propEnabledEl.onchange = (e) => {
+      g.propEnabled = e.target.checked;
+      if (!g.propEnabled) g.prop = null;
+      renderStep();
+    };
+  }
+
+  const propModelEl = $('#f-prop-model');
+  if (propModelEl) propModelEl.oninput = (e) => { g.propModel = e.target.value.trim(); };
+
   const radiusEl = $('#park-radius');
   if (radiusEl) {
     radiusEl.oninput = (e) => {
@@ -379,9 +427,20 @@ function handleAction(action, data) {
 
   switch (action) {
     case 'take-pos':
-      g.interact = { ...state.placementPos };
-      showToast('Interaktionspunkt übernommen');
-      renderStep();
+      fetchCoords().then((coords) => {
+        g.interact = coords;
+        state.placementPos = { ...coords };
+        showToast('Interaktionspunkt übernommen');
+        renderStep();
+      });
+      break;
+    case 'take-pos-prop':
+      if (!g.propEnabled) return;
+      fetchCoords().then((coords) => {
+        g.prop = { ...coords, model: g.propModel, enabled: true };
+        showToast('Prop-Position übernommen');
+        renderStep();
+      });
       break;
     case 'place-slot':
       startPlacement(data.target, data.type ? parseInt(data.index, 10) : null);
@@ -417,10 +476,14 @@ function startPlacement(target, index) {
   } else if (target === 'park-edit') {
     label = `Einpark-Slot #${index + 1}`;
     pos = { ...g.parkSlots[index] };
+  } else if (target === 'prop') {
+    label = 'Welt-Objekt';
+    if (g.prop) pos = { x: g.prop.x, y: g.prop.y, z: g.prop.z, h: g.prop.h ?? 0 };
   }
 
   state.placement = { target, index, label };
   state.placementPos = pos;
+  setPlacementActive(true);
 
   const iconEl = $('#hologram')?.querySelector('.hologram-icon');
   if (iconEl && g) {
@@ -441,6 +504,10 @@ function confirmPlacement() {
   else if (target === 'spawn-edit') g.spawnSlots[index] = pos;
   else if (target === 'park-new') g.parkSlots.push(pos);
   else if (target === 'park-edit') g.parkSlots[index] = pos;
+  else if (target === 'prop') {
+    g.prop = { ...pos, model: g.propModel, enabled: true };
+    g.propEnabled = true;
+  }
 
   closePlacement();
   renderStep();
@@ -449,6 +516,7 @@ function confirmPlacement() {
 
 function closePlacement() {
   state.placement = null;
+  setPlacementActive(false);
   $('#placement-hud').classList.add('hidden');
 }
 
@@ -480,12 +548,50 @@ function movePlacement(dx, dy, dh) {
   updatePlacementUI();
 }
 
+function garagePayload(g) {
+  return {
+    id: g.id,
+    name: g.name,
+    type: g.type,
+    interact: g.interact,
+    spawnSlots: g.spawnSlots,
+    parkMode: g.parkMode,
+    parkRadius: g.parkRadius,
+    parkSlots: g.parkSlots,
+    blipEnabled: g.blipEnabled,
+    blipLabel: g.blipLabel || g.name,
+    blipSprite: g.blipSprite,
+    blipColor: g.blipColor,
+    job: g.job,
+    minGrade: g.minGrade,
+    prop: g.propEnabled && g.prop
+      ? { enabled: true, model: g.propModel, x: g.prop.x, y: g.prop.y, z: g.prop.z, h: g.prop.h ?? 0 }
+      : null,
+  };
+}
+
 function saveGarage() {
   const g = garage();
   if (!g.name.trim()) return showToast('Name fehlt');
   if (!g.interact) return showToast('Interaktionspunkt fehlt');
   if (!g.spawnSlots.length) return showToast('Mindestens ein Auspark-Slot nötig');
-  showToast(`Garage „${g.name}" gespeichert`);
+
+  const payload = garagePayload(g);
+  if (typeof GetParentResourceName === 'function') {
+    fetch(`https://${nuiResource()}/saveGarage`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    })
+      .then((r) => r.json())
+      .then((res) => {
+        if (res.ok) showToast(`Garage „${g.name}" gespeichert`);
+        else showToast('Speichern fehlgeschlagen');
+      })
+      .catch(() => showToast('Speichern fehlgeschlagen'));
+    return;
+  }
+  showToast(`Garage „${g.name}" gespeichert (Preview)`);
 }
 
 function exportJson() {
@@ -494,8 +600,22 @@ function exportJson() {
   showToast('JSON in Zwischenablage kopiert');
 }
 
-function openCreator() {
+function loadGaragesFromGame(list) {
+  if (!Array.isArray(list) || !list.length) return;
+  state.garages = list.map(normalizeGarage);
+  state.activeGarageId = state.garages[0].id;
+  const first = state.garages[0];
+  if (first?.interact) state.placementPos = { ...first.interact };
+}
+
+function openCreator(data) {
+  if (data?.garages) loadGaragesFromGame(data.garages);
+  if (!state.garages.length) {
+    showToast('Keine Garagen geladen');
+    return;
+  }
   $('#creator').classList.remove('hidden');
+  state.step = 0;
   renderStep();
 }
 
@@ -574,9 +694,13 @@ function init() {
   });
 
   window.addEventListener('message', (event) => {
-    if (event.data?.action === 'openCreator') openCreator();
-    if (event.data?.action === 'closeCreator') closeCreator();
-    if (event.data?.position) state.placementPos = { ...event.data.position };
+    const data = event.data;
+    if (data?.action === 'openCreator') openCreator(data);
+    if (data?.action === 'closeCreator') closeCreator();
+    if (data?.action === 'placementSync' && data.position) {
+      state.placementPos = { ...data.position };
+      if (state.placement) updatePlacementUI();
+    }
   });
 }
 

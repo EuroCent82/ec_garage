@@ -39,7 +39,10 @@ function ECGarage.UI.OpenCreator()
     end
     nuiScreen = 'creator'
     ECGarage.UI.SetFocus(true)
-    SendNUIMessage({ action = 'openCreator' })
+    SendNUIMessage({
+        action = 'openCreator',
+        garages = ECGarage.GetGaragesForNui(),
+    })
 end
 
 function ECGarage.UI.Close()

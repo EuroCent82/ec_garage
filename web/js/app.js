@@ -402,8 +402,12 @@ function showToast(message, type = 'info') {
   toastTimer = setTimeout(() => toast.classList.add('hidden'), 2800);
 }
 
-function openGarage(mode) {
+function openGarage(mode, garageName) {
   if (mode) setUiMode(mode);
+  if (garageName && UI_MODES[state.uiMode]) {
+    UI_MODES[state.uiMode].title = garageName;
+    $('#brand-title').textContent = garageName;
+  }
   $('#app').classList.remove('hidden');
   render();
 }
@@ -552,8 +556,7 @@ function init() {
     const data = event.data;
     if (data?.action === 'open') {
       if (data.vehicles) state.vehicles = data.vehicles;
-      if (data.garageName) UI_MODES[data.mode || state.uiMode].title = data.garageName;
-      openGarage(data.mode || 'land');
+      openGarage(data.mode || 'land', data.garageName);
     }
     if (data?.action === 'close') closeGarage();
   });
