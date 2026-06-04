@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Vorlage 03 — Orbital Dossier</title>
+  <link rel="stylesheet" href="../vendor/fontawesome/css/all.min.css" />
+  <link rel="stylesheet" href="t03-orbital.css" />
+</head>
+<body>
+  <div class="orb" id="app">
+    <aside class="orb-rail">
+      <div class="orb-logo">ORBITAL·EC</div>
+      <div>
+        <div class="orb-sector">Sektor</div>
+        <div class="orb-loc" id="loc">Legion Square</div>
+      </div>
+      <nav class="orb-nav">
+        <button type="button" class="active" data-tab="land">Land</button>
+        <button type="button" data-tab="air">Luft</button>
+        <button type="button" data-tab="water">Wasser</button>
+      </nav>
+      <a class="orb-back" href="index.html">← Vorlagen</a>
+    </aside>
+    <main class="orb-main">
+      <header class="orb-top">
+        <input type="search" class="orb-search" id="search" placeholder="Dossier scannen…" />
+        <span class="orb-count" id="count">0 Einheiten</span>
+      </header>
+      <div class="orb-scroll">
+        <div class="orb-grid" id="grid"></div>
+      </div>
+    </main>
+  </div>
+  <script src="mock.js"></script>
+  <script>
+    const LOCS = { land: 'Legion Square', air: 'LSIA Orbital', water: 'Puerta Dock' };
+    let tab = 'land';
+
+    function renderDossier(v, i) {
+      return `
+        <article class="orb-dossier" style="--i:${i}">
+          <div class="orb-dossier__rings">
+            <div class="orb-ring orb-ring--outer"></div>
+            <div class="orb-ring orb-ring--mid"></div>
+            <div class="orb-ring orb-ring--inner"></div>
+            <div class="orb-core">${EC_TEMPLATE.catIcon(v.category)}<span>${(v.modelKey || 'unit').toUpperCase()}</span></div>
+          </div>
+          <div class="orb-dossier__head">
+            <div class="orb-dossier__name">${EC_TEMPLATE.displayName(v)}</div>
+            <div class="orb-dossier__plate">${v.plate}</div>
+          </div>
+          <div class="orb-telemetry">
+            <div>Tank<strong>${v.fuel}%</strong></div>
+            <div>Hull<strong>${v.body}%</strong></div>
+            <div>Core<strong>${v.engine}%</strong></div>
+          </div>
+          <div class="orb-status">${EC_TEMPLATE.statusLabel(v)} · ${EC_TEMPLATE.formatKm(v.mileage)}</div>
+          <button type="button" class="orb-btn">${v.status === 'parked' ? 'Deploy Unit' : 'Track Signal'}</button>
+        </article>`;
+    }
+
+    function render() {
+      document.getElementById('loc').textContent = LOCS[tab];
+      const list = EC_TEMPLATE.filter(EC_TEMPLATE_MOCK, { tab, q: document.getElementById('search').value });
+      document.getElementById('count').textContent = `${list.length} Einheiten`;
+      document.getElementById('grid').innerHTML = list.length
+        ? list.map(renderDossier).join('')
+        : '<div class="orb-empty">KEIN DOSSIER IN DIESEM SEKTOR</div>';
+    }
+
+    document.querySelectorAll('.orb-nav button').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.orb-nav button').forEach((b) => b.classList.remove('active'));
+        btn.classList.add('active');
+        tab = btn.dataset.tab;
+        render();
+      });
+    });
+    document.getElementById('search').addEventListener('input', render);
+    render();
+  </script>
+</body>
+</html>

@@ -37,6 +37,13 @@ local function registerSuggestions()
             }
         )
     end
+
+    if cmds.garagedebug and cmds.garagedebug.enabled ~= false then
+        addChatSuggestion(
+            'garagedebug',
+            cmds.garagedebug.help or 'Auspark-Slot-Marker ein/aus (admin/manager)'
+        )
+    end
 end
 
 CreateThread(function()

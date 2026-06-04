@@ -20,19 +20,43 @@ html.nui-embed .creator-backdrop {
   display: none !important;
 }
 
+html.nui-embed body {
+  min-height: 0 !important;
+  display: flex;
+  flex-direction: column;
+}
+
+html.nui-embed .garage:not(.hidden),
+html.nui-embed .creator:not(.hidden) {
+  pointer-events: auto !important;
+}
+
 html.nui-embed .garage,
 html.nui-embed .creator {
-  position: relative;
-  inset: auto;
+  position: relative !important;
+  inset: auto !important;
   width: 100%;
   height: 100%;
-  min-height: 100%;
+  min-height: 0 !important;
+  flex: 1;
   display: flex;
   align-items: stretch;
-  justify-content: center;
+  justify-content: stretch;
   pointer-events: none;
   background: transparent !important;
   animation: none;
+}
+
+/* Panel = volle iframe-Fläche → kein schwarzer Rand in CEF */
+html.nui-embed .garage-panel,
+html.nui-embed .creator-shell {
+  width: 100% !important;
+  height: 100% !important;
+  max-width: none !important;
+  max-height: none !important;
+  min-height: 0 !important;
+  flex: 1;
+  margin: 0;
 }
 
 html.nui-embed .garage-panel,
@@ -75,6 +99,6 @@ body.shell {
   top: 50%;
   left: 50%;
   width: min(1280px, 96vw);
-  height: min(860px, 92vh);
+  height: min(820px, 90vh);
   transform: translate(-50%, -50%);
 }

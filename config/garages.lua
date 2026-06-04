@@ -1,6 +1,6 @@
---- Garagen (erste Garage: Würfelpark) — Creator & Map nutzen dieselben Daten
+--- Garagen-Vorlage (read-only Fallback) + Laufzeit-GarageSeed
 
-GarageSeed = {
+GarageConfigTemplate = {
     {
         id = 'wuerfelpark',
         name = 'Würfelpark Garage',
@@ -31,3 +31,5 @@ GarageSeed = {
         },
     },
 }
+
+GarageSeed = GarageConfigTemplate

@@ -15,7 +15,7 @@ const UI_MODES = {
   air: {
     title: 'LSIA Hangar',
     subtitle: 'Luftfahrzeuge',
-    accent: '#a78bfa',
+    accent: '#8b5cf6',
     footerHint: '<kbd>E</kbd> Einparken &nbsp;·&nbsp; <kbd>ESC</kbd> Schließen',
     icon: VEHICLE_ICONS.air,
     emptyIcon: VEHICLE_ICONS.air,
@@ -70,10 +70,18 @@ const IMPOUND_LOTS = [
   { id: 'paleto', name: 'Paleto Bay Hafen-Impound' },
 ];
 
-const isGameNui = window.EC_NUI?.isEmbed || typeof GetParentResourceName === 'function';
+const isFiveM = typeof GetParentResourceName === 'function';
+const isBrowserPreview = window.EC_NUI?.isBrowserPreview === true;
+
+function resolveVehicles(incoming) {
+  if (Array.isArray(incoming) && incoming.length > 0) return incoming;
+  if (isFiveM) return [];
+  return [...MOCK_VEHICLES];
+}
 
 const state = {
-  vehicles: isGameNui ? [] : [...MOCK_VEHICLES],
+  vehicles: resolveVehicles(),
+  garageId: null,
   uiMode: 'land',
   activeTab: 'parked',
   filter: 'all',
@@ -81,6 +89,37 @@ const state = {
   lotFilter: 'all',
   renameTargetId: null,
 };
+
+function nuiResource() {
+  return typeof GetParentResourceName === 'function' ? GetParentResourceName() : 'ec_garage';
+}
+
+function ensureNuiFocus() {
+  if (!isFiveM) return;
+  fetch(`https://${nuiResource()}/nuiFocus`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ active: true }),
+  }).catch(() => {});
+}
+
+function bindGarageInputs() {
+  const app = $('#app');
+  if (!app || app.dataset.inputsBound === '1') return;
+  app.dataset.inputsBound = '1';
+
+  app.addEventListener('focusin', (e) => {
+    if (e.target.matches('input, textarea, select')) {
+      ensureNuiFocus();
+    }
+  });
+
+  app.addEventListener('mousedown', (e) => {
+    if (e.target.matches('input, textarea, select, button, .btn, .tab, .filter-btn')) {
+      ensureNuiFocus();
+    }
+  });
+}
 
 const $ = (sel) => document.querySelector(sel);
 const $$ = (sel) => document.querySelectorAll(sel);
@@ -159,7 +198,25 @@ function updateHeader() {
   $('#toolbar-garage').classList.toggle('hidden', isImpoundMode());
   $('#toolbar-impound').classList.toggle('hidden', !isImpoundMode());
 
+  updateTabButtons();
   renderHeaderStats();
+}
+
+function updateTabButtons() {
+  const pool = garageVehicles();
+  const parked = pool.filter((v) => v.status === 'parked').length;
+  const out = pool.filter((v) => v.status === 'out').length;
+
+  const parkedTab = $('#toolbar-garage .tab[data-tab="parked"]');
+  const outTab = $('#toolbar-garage .tab[data-tab="out"]');
+  if (parkedTab) {
+    parkedTab.innerHTML = `${ICONS.grid()} Eingeparkt <span class="tab-count">${parked}</span>`;
+    parkedTab.classList.toggle('active', state.activeTab === 'parked');
+  }
+  if (outTab) {
+    outTab.innerHTML = `${ICONS.clock()} Ausgeparkt <span class="tab-count">${out}</span>`;
+    outTab.classList.toggle('active', state.activeTab === 'out');
+  }
 }
 
 function renderHeaderStats() {
@@ -181,7 +238,7 @@ function renderHeaderStats() {
       </div>
       <div class="stat-pill">
         <span class="stat-value">${formatMoney(totalFees)}</span>
-        <span class="stat-label">Gesamtgebühren</span>
+        <span class="stat-label">Gebühren</span>
       </div>`;
     return;
   }
@@ -223,9 +280,9 @@ function renderCardImage(v, displayName, badgeHtml) {
   return `
     <div class="card-image-wrap">
       ${vehicleCardImageHtml(v)}
-      <div class="card-image-shine"></div>
+      <div class="card-image-shine" aria-hidden="true"></div>
       ${badgeHtml}
-      <button class="btn-favorite ${v.favorite ? 'active' : ''}" data-action="favorite" data-id="${v.id}" title="Favorit">
+      <button type="button" class="btn-favorite ${v.favorite ? 'active' : ''}" data-action="favorite" data-id="${v.id}" title="Favorit">
         ${ICONS.star(v.favorite)}
       </button>
     </div>`;
@@ -236,15 +293,15 @@ function renderGarageCard(v) {
   const badge = `<span class="card-badge card-badge--${v.status}">${v.status === 'parked' ? 'Eingeparkt' : 'Ausgeparkt'}</span>`;
 
   const renameBtn = `
-    <button class="btn btn-ghost btn-icon-only" data-action="rename" data-id="${v.id}" title="Umbenennen">
+    <button type="button" class="btn btn-ghost btn-icon-only" data-action="rename" data-id="${v.id}" title="Umbenennen">
       ${ICONS.pen()}
     </button>`;
 
   const actions = v.status === 'parked'
-    ? `<button class="btn btn-primary" data-action="spawn" data-id="${v.id}">
+    ? `<button type="button" class="btn btn-primary" data-action="spawn" data-id="${v.id}">
          ${ICONS.arrowRight()} Ausparken
        </button>${renameBtn}`
-    : `<button class="btn btn-success" data-action="locate" data-id="${v.id}">
+    : `<button type="button" class="btn btn-success" data-action="locate" data-id="${v.id}">
          ${ICONS.mapPin()} Orten
        </button>${renameBtn}`;
 
@@ -325,7 +382,7 @@ function renderImpoundCard(v) {
           </div>
         </div>
         <div class="card-actions">
-          <button class="btn btn-warning" data-action="mark-lot" data-id="${v.id}">
+          <button type="button" class="btn btn-warning" data-action="mark-lot" data-id="${v.id}">
             ${ICONS.mapMarked()} Standort markieren
           </button>
         </div>
@@ -357,7 +414,7 @@ function render() {
   } else {
     empty.classList.add('hidden');
     grid.className = `vehicle-grid vehicle-grid--${state.uiMode}${isImpoundMode() ? ' vehicle-grid--impound' : ` vehicle-grid--${state.activeTab}`}`;
-    grid.innerHTML = list.map((v) => isImpoundMode() ? renderImpoundCard(v) : renderGarageCard(v)).join('');
+    grid.innerHTML = list.map((v) => (isImpoundMode() ? renderImpoundCard(v) : renderGarageCard(v))).join('');
     initCardHoverEffects();
   }
 }
@@ -391,6 +448,7 @@ function setUiMode(mode) {
   $$('.preview-btn').forEach((b) => b.classList.toggle('active', b.dataset.mode === mode));
   $$('#toolbar-garage .tab').forEach((t) => t.classList.toggle('active', t.dataset.tab === 'parked'));
   $$('#toolbar-garage .filter-btn').forEach((b) => b.classList.toggle('active', b.dataset.filter === 'all'));
+  updateHeader();
 
   render();
 }
@@ -410,11 +468,14 @@ function openGarage(mode, garageName) {
     UI_MODES[state.uiMode].title = garageName;
     $('#brand-title').textContent = garageName;
   }
+  closeRenameModal();
   $('#app').classList.remove('hidden');
+  ensureNuiFocus();
   render();
 }
 
 function closeGarage() {
+  if ($('#app').classList.contains('hidden')) return;
   $('#app').classList.add('hidden');
   closeRenameModal();
   if (window.EC_NUI?.isEmbed) {
@@ -423,45 +484,119 @@ function closeGarage() {
 }
 
 function openRenameModal(id) {
-  const v = state.vehicles.find((x) => x.id === id);
+  const v = state.vehicles.find((x) => String(x.id) === String(id));
   if (!v) return;
   state.renameTargetId = id;
   $('#rename-model').textContent = v.model + ' · ' + v.plate;
   $('#rename-input').value = v.customName || '';
   $('#note-input').value = v.note || '';
-  $('#rename-modal').classList.remove('hidden');
-  $('#rename-input').focus();
+  const modal = $('#rename-modal');
+  modal.classList.remove('hidden');
+  modal.setAttribute('aria-hidden', 'false');
+  ensureNuiFocus();
+  requestAnimationFrame(() => {
+    $('#rename-input').focus();
+    $('#rename-input').select();
+  });
 }
 
 function closeRenameModal() {
   state.renameTargetId = null;
-  $('#rename-modal').classList.add('hidden');
+  const modal = $('#rename-modal');
+  if (!modal) return;
+  modal.classList.add('hidden');
+  modal.setAttribute('aria-hidden', 'true');
+  ensureNuiFocus();
 }
 
 function saveRename() {
-  const v = state.vehicles.find((x) => x.id === state.renameTargetId);
+  const v = state.vehicles.find((x) => String(x.id) === String(state.renameTargetId));
   if (!v) return;
-  v.customName = $('#rename-input').value.trim() || null;
-  v.note = $('#note-input').value.trim();
-  closeRenameModal();
-  render();
-  showToast('Fahrzeug gespeichert', 'success');
+
+  const customName = $('#rename-input').value.trim() || null;
+  const note = $('#note-input').value.trim();
+  const plate = v.plate || v.id;
+  const saveBtn = $('#rename-save');
+  if (saveBtn) saveBtn.disabled = true;
+
+  if (!isFiveM) {
+    v.customName = customName;
+    v.note = note;
+    closeRenameModal();
+    render();
+    showToast('Fahrzeug gespeichert', 'success');
+    if (saveBtn) saveBtn.disabled = false;
+    return;
+  }
+
+  fetch(`https://${nuiResource()}/saveVehicleMeta`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      plate,
+      customName,
+      note,
+      favorite: !!v.favorite,
+    }),
+  })
+    .then((r) => r.json())
+    .catch(() => {
+      if (saveBtn) saveBtn.disabled = false;
+      showToast('Speichern fehlgeschlagen', 'danger');
+    });
+}
+
+function takeOutVehicle(v) {
+  if (!isFiveM) {
+    v.status = 'out';
+    render();
+    showToast(`${getDisplayName(v)} ausgeparkt (Preview)`, 'success');
+    return;
+  }
+
+  if (!state.garageId) {
+    showToast('Garage unbekannt', 'danger');
+    return;
+  }
+
+  fetch(`https://${nuiResource()}/spawnVehicle`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ garageId: state.garageId, plate: v.plate || v.id }),
+  })
+    .then((r) => r.json())
+    .then((res) => {
+      if (!res.ok) {
+        showToast(res.message || 'Ausparken fehlgeschlagen', 'danger');
+      }
+    })
+    .catch(() => showToast('Ausparken fehlgeschlagen', 'danger'));
 }
 
 function handleAction(action, id) {
-  const v = state.vehicles.find((x) => x.id === id);
+  const v = state.vehicles.find((x) => String(x.id) === String(id));
   if (!v) return;
 
   switch (action) {
     case 'favorite':
       v.favorite = !v.favorite;
       render();
+      if (isFiveM) {
+        fetch(`https://${nuiResource()}/saveVehicleMeta`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            plate: v.plate || v.id,
+            customName: v.customName || null,
+            note: v.note || '',
+            favorite: !!v.favorite,
+          }),
+        }).catch(() => {});
+      }
       showToast(v.favorite ? 'Als Favorit markiert' : 'Favorit entfernt', 'info');
       break;
     case 'spawn':
-      v.status = 'out';
-      render();
-      showToast(`${getDisplayName(v)} ausgeparkt`, 'success');
+      takeOutVehicle(v);
       break;
     case 'locate':
       showToast(`${getDisplayName(v)} auf der Karte markiert`, 'info');
@@ -476,16 +611,12 @@ function handleAction(action, id) {
 }
 
 function initStaticIcons() {
-  $('#btn-close').innerHTML = ICONS.close();
-  $$('#rename-modal .modal-close').forEach((el) => { el.innerHTML = ICONS.close(); });
+  $$('.btn-close').forEach((el) => { el.innerHTML = ICONS.close(); });
 
-  const parkedTab = $('#toolbar-garage .tab[data-tab="parked"]');
-  const outTab = $('#toolbar-garage .tab[data-tab="out"]');
-  if (parkedTab) parkedTab.innerHTML = `${ICONS.grid()} Eingeparkt`;
-  if (outTab) outTab.innerHTML = `${ICONS.clock()} Ausgeparkt`;
-
-  $$('#toolbar-garage .search-box, #toolbar-impound .search-box').forEach((box) => {
-    if (!box.querySelector('.icon')) box.insertAdjacentHTML('afterbegin', ICONS.search());
+  $$('.search-box').forEach((box) => {
+    if (!box.querySelector('.icon') && !box.querySelector('i')) {
+      box.insertAdjacentHTML('afterbegin', ICONS.search());
+    }
   });
 
   const favBtn = $('#toolbar-garage .filter-btn[data-filter="favorites"]');
@@ -499,6 +630,7 @@ function initStaticIcons() {
 
 function init() {
   initStaticIcons();
+  bindGarageInputs();
 
   populateLotFilter();
 
@@ -520,6 +652,10 @@ function init() {
     });
   });
 
+  $$('.preview-btn').forEach((btn) => {
+    btn.addEventListener('click', () => openGarage(btn.dataset.mode));
+  });
+
   $('#search-input').addEventListener('input', (e) => {
     state.search = e.target.value;
     render();
@@ -535,17 +671,58 @@ function init() {
     render();
   });
 
-  $('#vehicle-grid').addEventListener('click', (e) => {
+  const appEl = $('#app');
+  appEl.addEventListener('click', (e) => {
+    if (e.target.closest('[data-dismiss="modal"]')) {
+      closeRenameModal();
+      return;
+    }
+
+    const modal = $('#rename-modal');
+    if (modal && !modal.classList.contains('hidden') && e.target === modal) {
+      closeRenameModal();
+      return;
+    }
+
     const btn = e.target.closest('[data-action]');
-    if (!btn) return;
-    handleAction(btn.dataset.action, parseInt(btn.dataset.id, 10));
+    if (!btn || !e.target.closest('#vehicle-grid')) return;
+    e.preventDefault();
+    e.stopPropagation();
+    handleAction(btn.dataset.action, btn.dataset.id);
   });
 
-  $('#btn-close').addEventListener('click', closeGarage);
+  $$('#btn-close, #btn-close-impound').forEach((btn) => btn.addEventListener('click', closeGarage));
 
-  $$('#rename-modal .modal-close').forEach((btn) => btn.addEventListener('click', closeRenameModal));
-  $('#rename-save').addEventListener('click', saveRename);
-  $('#rename-input').addEventListener('keydown', (e) => { if (e.key === 'Enter') saveRename(); });
+  const renameModal = $('#rename-modal');
+  if (renameModal) {
+    renameModal.addEventListener('click', (e) => {
+      if (e.target.closest('[data-dismiss="modal"]')) {
+        closeRenameModal();
+      }
+    });
+    renameModal.querySelector('.modal-dialog')?.addEventListener('click', (e) => e.stopPropagation());
+  }
+
+  $$('#rename-modal .modal-close').forEach((btn) => btn.addEventListener('click', (e) => {
+    e.preventDefault();
+    closeRenameModal();
+  }));
+
+  const renameSave = $('#rename-save');
+  if (renameSave) {
+    renameSave.addEventListener('click', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      saveRename();
+    });
+  }
+
+  $('#rename-input')?.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      saveRename();
+    }
+  });
 
   document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape') {
@@ -557,11 +734,43 @@ function init() {
   window.addEventListener('message', (event) => {
     const data = event.data;
     if (data?.action === 'open' || data?.action === 'openGarage') {
-      state.vehicles = Array.isArray(data.vehicles) ? data.vehicles : [];
+      state.garageId = data.garageId || null;
+      state.vehicles = resolveVehicles(data.vehicles);
       openGarage(data.mode || 'land', data.garageName);
     }
     if (data?.action === 'close') closeGarage();
+    if (data?.action === 'takeOutResult') {
+      if (data.ok) {
+        const v = state.vehicles.find((x) => String(x.plate || x.id) === String(data.plate));
+        if (v) v.status = 'out';
+        render();
+        showToast('Fahrzeug ausgeparkt', 'success');
+      } else {
+        showToast(data.message || 'Ausparken fehlgeschlagen', 'danger');
+      }
+    }
+    if (data?.action === 'saveVehicleMetaResult') {
+      const saveBtn = $('#rename-save');
+      if (saveBtn) saveBtn.disabled = false;
+      if (data.ok) {
+        const v = state.vehicles.find((x) => String(x.plate || x.id) === String(data.plate));
+        if (v) {
+          v.customName = data.customName || null;
+          v.note = data.note || '';
+          if (typeof data.favorite === 'boolean') v.favorite = data.favorite;
+        }
+        closeRenameModal();
+        render();
+        showToast('Fahrzeug gespeichert', 'success');
+      } else {
+        showToast(data.message || 'Speichern fehlgeschlagen', 'danger');
+      }
+    }
   });
 }
 
 init();
+
+if (!isFiveM) {
+  openGarage('land');
+}

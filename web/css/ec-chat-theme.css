@@ -1,0 +1,167 @@
+/**
+ * EC Chat Theme — gemeinsame Tokens für Garage & Creator
+ * (angelehnt an ec_chat / ec_chat_theme NUI)
+ */
+@import url('https://fonts.googleapis.com/css2?family=Roboto+Condensed:wght@400;600;700&display=swap');
+
+.hidden { display: none !important; }
+
+:root {
+  --ec-chat-panel: #161b22f5;
+  --ec-chat-panel-2: #0d1117fa;
+  --ec-chat-line: #30363df2;
+  --ec-chat-card: #161b22e0;
+  --ec-chat-field: #010409;
+  --ec-chat-text: #e6edf3;
+  --ec-chat-muted: #8b949e;
+  --ec-chat-dim: #5f6b7c;
+  --ec-brand: #43a047;
+  --ec-brand-2: #2e7d32;
+  --ec-brand-dim: rgba(46, 125, 50, 0.18);
+  --ec-brand-line: rgba(107, 155, 95, 0.45);
+  --ec-primary-a: #4c7241;
+  --ec-primary-b: #314a2d;
+  --ec-warning: #d8a15c;
+  --ec-danger: #ff7b72;
+  --ec-creator: #d8a15c;
+  --ec-creator-dim: rgba(216, 161, 92, 0.14);
+  --ec-creator-glow: rgba(216, 161, 92, 0.35);
+  --ec-font: 'Roboto Condensed', 'Segoe UI', Arial, sans-serif;
+  --ec-mono: 'Cascadia Code', Consolas, monospace;
+  --ec-radius: 6px;
+  --ec-radius-md: 8px;
+  --ec-radius-lg: 12px;
+  --ec-radius-xl: 14px;
+
+  /* Garage style.css Aliase */
+  --bg-base: #070707;
+  --bg-panel: var(--ec-chat-panel);
+  --bg-card: var(--ec-chat-card);
+  --bg-card-hover: #21262de8;
+  --bg-elevated: #21262d;
+  --border: var(--ec-chat-line);
+  --border-hover: #484f58;
+  --text-primary: var(--ec-chat-text);
+  --text-secondary: var(--ec-chat-muted);
+  --text-muted: var(--ec-chat-dim);
+  --accent: var(--ec-brand);
+  --accent-hover: var(--ec-brand-2);
+  --accent-glow: rgba(67, 160, 71, 0.28);
+  --mode-accent: var(--ec-brand);
+  --success: var(--ec-brand);
+  --success-bg: var(--ec-brand-dim);
+  --warning: var(--ec-warning);
+  --warning-bg: rgba(216, 161, 92, 0.12);
+  --danger: var(--ec-danger);
+  --danger-bg: rgba(255, 123, 114, 0.12);
+  --fuel: #58a6ff;
+  --body: #a78bfa;
+  --engine: #f0883e;
+  --radius-sm: var(--ec-radius);
+  --radius-md: var(--ec-radius-md);
+  --radius-lg: var(--ec-radius-lg);
+  --radius-xl: var(--ec-radius-xl);
+  --shadow-panel: 0 24px 64px rgba(0, 0, 0, 0.65), 0 0 0 1px var(--ec-chat-line);
+  --shadow-card: inset 0 1px rgba(255, 255, 255, 0.06);
+  --font: var(--ec-font);
+  --transition: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Chat-Panel Look (Garage + Creator Shell) */
+.garage-panel,
+.creator-shell {
+  border: 1px solid var(--ec-chat-line);
+  background-color: var(--ec-chat-panel);
+  background-image:
+    repeating-linear-gradient(180deg, transparent 0, transparent 4px, rgba(0, 0, 0, 0.22) 4px, rgba(0, 0, 0, 0.22) 5px),
+    repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.02) 0, rgba(255, 255, 255, 0.02) 1px, transparent 1px, transparent 4px),
+    linear-gradient(168deg, var(--ec-chat-panel-2) 0%, rgba(1, 4, 9, 0.98) 100%);
+  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.65), inset 0 1px rgba(255, 255, 255, 0.06);
+}
+
+.garage-panel::before,
+.creator-shell::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  box-shadow: inset 0 1px rgba(255, 255, 255, 0.06);
+}
+
+/* Primär-Buttons wie ec_chat */
+.btn-primary {
+  background: linear-gradient(180deg, var(--ec-primary-a) 0%, var(--ec-primary-b) 100%);
+  border-color: var(--ec-brand-line);
+  color: #fff;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-size: 11px;
+  box-shadow: inset 0 1px rgba(255, 255, 255, 0.14);
+}
+
+.btn-primary:hover {
+  filter: brightness(1.08);
+  border-color: var(--ec-brand);
+  box-shadow: inset 0 1px rgba(255, 255, 255, 0.14), 0 4px 16px rgba(67, 160, 71, 0.2);
+}
+
+.btn-success {
+  background: linear-gradient(180deg, #5cb860 0%, var(--ec-brand-2) 100%);
+  border: 1px solid var(--ec-brand-line);
+  color: #fff;
+}
+
+.tab.active {
+  background: linear-gradient(180deg, var(--ec-primary-a) 0%, var(--ec-primary-b) 100%);
+  border-color: transparent;
+  color: #fff;
+  box-shadow: inset 0 1px rgba(255, 255, 255, 0.12);
+}
+
+.search-box input,
+.input-field,
+.lot-filter {
+  background: var(--ec-chat-field);
+  border-color: var(--ec-chat-line);
+  color: var(--ec-chat-text);
+}
+
+.search-box input:focus,
+.input-field:focus,
+.lot-filter:focus {
+  border-color: rgba(67, 160, 71, 0.55);
+  box-shadow: 0 0 0 2px rgba(67, 160, 71, 0.2);
+}
+
+.stat-pill,
+.card-plate {
+  background: var(--bg-elevated);
+  border-color: var(--border);
+}
+
+.brand-icon {
+  background: linear-gradient(180deg, var(--ec-primary-a) 0%, var(--ec-primary-b) 100%);
+  border: 1px solid var(--ec-brand-line);
+}
+
+.garage[data-mode="land"] { --mode-accent: #43a047; --accent: #43a047; }
+.garage[data-mode="air"] { --mode-accent: #a78bfa; --accent: #a78bfa; }
+.garage[data-mode="water"] { --mode-accent: #58a6ff; --accent: #58a6ff; }
+.garage[data-mode="impound"] { --mode-accent: #d8a15c; --accent: #d8a15c; }
+
+/* Scrollbar wie ec_chat */
+.garage-content::-webkit-scrollbar,
+.creator-body::-webkit-scrollbar,
+.step-nav::-webkit-scrollbar,
+.garage-list::-webkit-scrollbar {
+  width: 6px;
+}
+
+.garage-content::-webkit-scrollbar-thumb,
+.creator-body::-webkit-scrollbar-thumb,
+.step-nav::-webkit-scrollbar-thumb,
+.garage-list::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, rgba(102, 187, 106, 0.75) 0%, rgba(67, 160, 71, 0.55) 100%);
+  border-radius: 99px;
+}

@@ -17,7 +17,7 @@ RegisterNetEvent('ec_garage:receiveVehicles', function(garageId, vehicles)
     ECGarage.UI.OpenGarage({
         mode = garage.type or 'land',
         garageName = garage.name,
-        garageId = garage.id,
+        garageId = tostring(garage.id),
         vehicles = vehicles or {},
     })
 end)

@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Vorlage 05 — Sticker Wall</title>
+  <link rel="stylesheet" href="../vendor/fontawesome/css/all.min.css" />
+  <link rel="stylesheet" href="t05-stickerwall.css" />
+</head>
+<body>
+  <div class="wall-wrap" id="app">
+    <header class="wall-top">
+      <h1 class="wall-title" id="title">Meine Garage-Wand</h1>
+      <div class="wall-tabs">
+        <button type="button" class="wall-tab active" data-tab="land">🚗 Land</button>
+        <button type="button" class="wall-tab" data-tab="air">🚁 Luft</button>
+        <button type="button" class="wall-tab" data-tab="water">⛵ Wasser</button>
+      </div>
+      <input type="search" class="wall-search" id="search" placeholder="Was suchst du?" />
+      <a class="wall-back" href="index.html">← Vorlagen</a>
+    </header>
+    <div class="wall-scroll">
+      <div class="wall-grid" id="grid"></div>
+    </div>
+  </div>
+  <script src="mock.js"></script>
+  <script>
+    const TITLES = {
+      land: 'Meine Garage-Wand',
+      air: 'Hangar-Sticker-Board',
+      water: 'Hafen-Pinnwand',
+    };
+    const ROTS = [-4, 2, -2, 3, -3, 1, -1, 4];
+    let tab = 'land';
+
+    function renderPolaroid(v, i) {
+      const rot = ROTS[i % ROTS.length];
+      const stickers = [
+        `<span class="sticker sticker--${v.status}">${EC_TEMPLATE.statusLabel(v)}</span>`,
+        `<span class="sticker sticker--fuel">${v.fuel}% Tank</span>`,
+        v.favorite ? '<span class="sticker sticker--fav">★ Fav</span>' : '',
+      ].join('');
+      return `
+        <article class="polaroid" style="--i:${i};--rot:${rot}deg">
+          <div class="polaroid__tape"></div>
+          <div class="polaroid__photo">${EC_TEMPLATE.catIcon(v.category)}<span>${(v.modelKey || '').toUpperCase()}</span></div>
+          <div class="polaroid__caption">${EC_TEMPLATE.displayName(v)}</div>
+          <div class="polaroid__plate">${v.plate}</div>
+          <div class="polaroid__stickers">${stickers}</div>
+          <div class="polaroid__actions">
+            <button type="button" class="polaroid__btn">${v.status === 'parked' ? 'Holen' : 'Finden'}</button>
+          </div>
+        </article>`;
+    }
+
+    function render() {
+      document.getElementById('title').textContent = TITLES[tab];
+      const list = EC_TEMPLATE.filter(EC_TEMPLATE_MOCK, { tab, q: document.getElementById('search').value });
+      document.getElementById('grid').innerHTML = list.length
+        ? list.map(renderPolaroid).join('')
+        : '<p class="wall-empty">Hier klebt noch nix …</p>';
+    }
+
+    document.querySelectorAll('.wall-tab').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.wall-tab').forEach((b) => b.classList.remove('active'));
+        btn.classList.add('active');
+        tab = btn.dataset.tab;
+        render();
+      });
+    });
+    document.getElementById('search').addEventListener('input', render);
+    render();
+  </script>
+</body>
+</html>

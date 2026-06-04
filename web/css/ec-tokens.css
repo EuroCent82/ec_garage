@@ -1,0 +1,48 @@
+/* EC Design System — Garage & Creator (angelehnt an ec_chat / ec_lifeinvader) */
+
+:root {
+  --ec-bg-void: #050508;
+  --ec-bg-panel: rgba(12, 14, 20, 0.94);
+  --ec-bg-panel-2: rgba(8, 10, 14, 0.88);
+  --ec-bg-card: rgba(18, 22, 30, 0.82);
+  --ec-bg-card-hover: rgba(24, 29, 40, 0.92);
+  --ec-bg-elevated: rgba(30, 36, 48, 0.55);
+
+  --ec-glass-border: rgba(255, 255, 255, 0.07);
+  --ec-glass-border-strong: rgba(255, 255, 255, 0.14);
+
+  --ec-text: #eef1f6;
+  --ec-text-secondary: #9aa3b2;
+  --ec-text-muted: #5f6b7c;
+
+  --ec-garage: #4d9fff;
+  --ec-garage-dim: rgba(77, 159, 255, 0.14);
+  --ec-garage-glow: rgba(77, 159, 255, 0.35);
+
+  --ec-creator: #2dd4a8;
+  --ec-creator-dim: rgba(45, 212, 168, 0.14);
+  --ec-creator-glow: rgba(45, 212, 168, 0.32);
+
+  --ec-air: #a78bfa;
+  --ec-water: #22d3ee;
+  --ec-warning: #f5b942;
+  --ec-success: #3ecf8e;
+  --ec-danger: #f07178;
+
+  --ec-font: 'Outfit', 'Segoe UI', system-ui, sans-serif;
+  --ec-mono: 'JetBrains Mono', 'Cascadia Code', Consolas, monospace;
+
+  --ec-radius-sm: 8px;
+  --ec-radius-md: 12px;
+  --ec-radius-lg: 16px;
+  --ec-radius-xl: 22px;
+
+  --ec-ease: cubic-bezier(0.25, 0.8, 0.25, 1);
+  --ec-ease-spring: cubic-bezier(0.34, 1.45, 0.64, 1);
+  --ec-transition: 0.28s var(--ec-ease);
+
+  --ec-shadow-panel:
+    0 0 0 1px var(--ec-glass-border),
+    0 28px 80px rgba(0, 0, 0, 0.55),
+    0 0 60px -12px var(--ec-garage-dim);
+}

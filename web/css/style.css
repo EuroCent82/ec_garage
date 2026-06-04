@@ -1,46 +1,4 @@
-/* ── EC Garage – UI Preview ─────────────────────────────────────────────── */
-
-:root {
-  --bg-base: #0a0c10;
-  --bg-panel: rgba(14, 17, 23, 0.92);
-  --bg-card: rgba(22, 27, 36, 0.85);
-  --bg-card-hover: rgba(28, 34, 46, 0.95);
-  --bg-elevated: rgba(36, 43, 58, 0.6);
-
-  --border: rgba(255, 255, 255, 0.06);
-  --border-hover: rgba(255, 255, 255, 0.12);
-
-  --text-primary: #f0f2f5;
-  --text-secondary: #8b95a8;
-  --text-muted: #5c6578;
-
-  --accent: #3b82f6;
-  --accent-hover: #2563eb;
-  --accent-glow: rgba(59, 130, 246, 0.25);
-  --mode-accent: var(--accent);
-
-  --success: #22c55e;
-  --success-bg: rgba(34, 197, 94, 0.12);
-  --warning: #f59e0b;
-  --warning-bg: rgba(245, 158, 11, 0.12);
-  --danger: #ef4444;
-  --danger-bg: rgba(239, 68, 68, 0.12);
-
-  --fuel: #06b6d4;
-  --body: #a78bfa;
-  --engine: #f97316;
-
-  --radius-sm: 8px;
-  --radius-md: 12px;
-  --radius-lg: 16px;
-  --radius-xl: 20px;
-
-  --shadow-panel: 0 25px 80px rgba(0, 0, 0, 0.6), 0 0 0 1px var(--border);
-  --shadow-card: 0 4px 24px rgba(0, 0, 0, 0.3);
-
-  --font: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  --transition: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-}
+/* EC Garage — Layout (Tokens: ec-chat-theme.css) */
 
 *, *::before, *::after {
   box-sizing: border-box;
@@ -50,101 +8,47 @@
 
 body {
   font-family: var(--font);
-  background: #1a1d24;
+  background: transparent;
   color: var(--text-primary);
   min-height: 100vh;
   overflow: hidden;
   -webkit-font-smoothing: antialiased;
 }
 
-/* Preview background */
-body::before {
-  content: '';
-  position: fixed;
-  inset: 0;
-  background:
-    linear-gradient(135deg, rgba(59, 130, 246, 0.08) 0%, transparent 50%),
-    linear-gradient(225deg, rgba(139, 92, 246, 0.06) 0%, transparent 50%),
-    url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="60" height="60"><rect fill="%231a1d24" width="60" height="60"/><circle fill="%23242832" cx="30" cy="30" r="1"/></svg>');
-  z-index: -1;
+/* Browser-Preview: kein Vollbild-Dimm, nur das Panel */
+body:not(.nui-embed) .garage-backdrop {
+  display: none;
 }
 
 .hidden { display: none !important; }
 
-/* ── Preview Menu (4 UI-Modi) ─────────────────────────────────────────────── */
+/* ── Preview Toggle ─────────────────────────────────────────────────────── */
 
-.preview-menu {
+.preview-toggle {
   position: fixed;
   bottom: 24px;
   left: 50%;
   transform: translateX(-50%);
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 8px 12px;
-  background: rgba(14, 17, 23, 0.95);
-  border: 1px solid var(--border);
-  border-radius: 999px;
-  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
-  z-index: 9999;
-  flex-wrap: wrap;
-  justify-content: center;
-  max-width: 94vw;
-}
-
-.preview-menu--open { display: none; }
-
-.preview-label {
-  font-size: 11px;
-  font-weight: 600;
-  color: var(--text-muted);
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-  padding: 0 8px;
-}
-
-.preview-btn {
-  padding: 8px 16px;
-  background: var(--bg-elevated);
-  color: var(--text-secondary);
-  border: 1px solid var(--border);
+  padding: 12px 28px;
+  background: var(--accent);
+  color: #fff;
+  border: none;
   border-radius: 999px;
   font-family: var(--font);
-  font-size: 12px;
+  font-size: 14px;
   font-weight: 600;
   cursor: pointer;
+  box-shadow: 0 8px 32px var(--accent-glow);
   transition: var(--transition);
-  white-space: nowrap;
+  z-index: 9999;
 }
 
-.preview-btn:hover {
-  color: var(--text-primary);
-  border-color: var(--border-hover);
+.preview-toggle:hover {
+  background: var(--accent-hover);
+  transform: translateX(-50%) translateY(-2px);
 }
 
-.preview-btn.active {
-  background: var(--mode-accent, var(--accent));
-  color: #fff;
-  border-color: transparent;
-  box-shadow: 0 4px 16px rgba(59, 130, 246, 0.25);
-}
-
-.preview-btn--impound.active {
-  background: var(--warning);
-  box-shadow: 0 4px 16px rgba(245, 158, 11, 0.25);
-}
-
-.preview-btn--creator {
-  text-decoration: none;
-  background: rgba(16, 185, 129, 0.12);
-  border-color: rgba(16, 185, 129, 0.35);
-  color: #10b981;
-}
-
-.preview-btn--creator:hover {
-  background: rgba(16, 185, 129, 0.22);
-  color: #34d399;
-}
+.garage:not(.hidden) ~ .preview-toggle { display: none; }
 
 /* ── Garage Overlay ───────────────────────────────────────────────────── */
 
@@ -156,21 +60,7 @@ body::before {
   justify-content: center;
   z-index: 1000;
   animation: fadeIn 0.3s ease;
-}
-
-html.nui-embed .garage {
-  position: relative;
-  inset: auto;
-  width: 100%;
-  height: 100%;
-  animation: none;
-}
-
-html.nui-embed .garage-panel {
-  width: 100%;
-  height: 100%;
-  max-width: none;
-  max-height: none;
+  background: transparent;
 }
 
 @keyframes fadeIn {
@@ -189,28 +79,13 @@ html.nui-embed .garage-panel {
   position: relative;
   width: min(1180px, 94vw);
   height: min(780px, 90vh);
-  background: var(--bg-panel);
   border-radius: var(--radius-xl);
-  box-shadow: var(--shadow-panel);
-  backdrop-filter: blur(24px);
+  backdrop-filter: blur(12px);
   display: flex;
   flex-direction: column;
   overflow: hidden;
   animation: slideUp 0.35s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-.garage-panel::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  border-radius: inherit;
-  padding: 1px;
-  background: linear-gradient(135deg, color-mix(in srgb, var(--mode-accent) 50%, transparent), transparent 40%, rgba(139, 92, 246, 0.2));
-  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-  -webkit-mask-composite: xor;
-  mask-composite: exclude;
-  pointer-events: none;
+  isolation: isolate;
 }
 
 @keyframes slideUp {
@@ -240,24 +115,25 @@ html.nui-embed .garage-panel {
 .brand-icon {
   width: 44px;
   height: 44px;
-  background: linear-gradient(135deg, var(--mode-accent), color-mix(in srgb, var(--mode-accent) 60%, #6366f1));
   border-radius: var(--radius-md);
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  animation: iconPulse 3s ease-in-out infinite;
-}
-
-.brand-icon svg {
-  width: 24px;
-  height: 24px;
-  color: #fff;
 }
 
 @keyframes iconPulse {
-  0%, 100% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--mode-accent) 40%, transparent); }
-  50% { box-shadow: 0 0 20px 4px color-mix(in srgb, var(--mode-accent) 20%, transparent); }
+  0%, 100% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--mode-accent) 35%, transparent); }
+  50% { box-shadow: 0 0 18px 3px color-mix(in srgb, var(--mode-accent) 18%, transparent); }
+}
+
+.brand-icon svg,
+.brand-icon .icon,
+.brand-icon i {
+  width: 24px;
+  height: 24px;
+  font-size: 22px;
+  color: #fff;
 }
 
 .brand-title {
@@ -287,12 +163,6 @@ html.nui-embed .garage-panel {
   border: 1px solid var(--border);
   border-radius: var(--radius-md);
   min-width: 72px;
-  transition: var(--transition);
-}
-
-.stat-pill:hover {
-  border-color: var(--border-hover);
-  transform: translateY(-1px);
 }
 
 .stat-pill--warn .stat-value { color: var(--warning); }
@@ -380,14 +250,21 @@ html.nui-embed .garage-panel {
 .tab.active {
   background: var(--mode-accent, var(--accent));
   color: #fff;
-  box-shadow: 0 2px 12px color-mix(in srgb, var(--mode-accent) 30%, transparent);
-  animation: tabPop 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+  box-shadow: 0 2px 12px var(--accent-glow);
 }
 
-@keyframes tabPop {
-  0% { transform: scale(0.95); }
-  60% { transform: scale(1.03); }
-  100% { transform: scale(1); }
+.tab-count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 5px;
+  margin-left: 4px;
+  border-radius: 999px;
+  font-size: 10px;
+  font-weight: 700;
+  background: rgba(0, 0, 0, 0.2);
 }
 
 .tab--impound.active {
@@ -460,62 +337,9 @@ html.nui-embed .garage-panel {
 .filter-btn:hover { border-color: var(--border-hover); color: var(--text-primary); }
 
 .filter-btn.active {
-  background: color-mix(in srgb, var(--mode-accent) 15%, transparent);
-  border-color: color-mix(in srgb, var(--mode-accent) 35%, transparent);
-  color: var(--mode-accent);
-}
-
-/* ── Impound Toolbar ────────────────────────────────────────────────────── */
-
-.impound-info-banner {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 10px 14px;
-  background: var(--warning-bg);
-  border: 1px solid rgba(245, 158, 11, 0.2);
-  border-radius: var(--radius-sm);
-  font-size: 12px;
-  color: var(--text-secondary);
-  flex: 1;
-  min-width: 0;
-}
-
-.impound-info-banner svg {
-  width: 18px;
-  height: 18px;
+  background: rgba(245, 158, 11, 0.15);
+  border-color: rgba(245, 158, 11, 0.35);
   color: var(--warning);
-  flex-shrink: 0;
-}
-
-.impound-info-banner strong { color: var(--warning); }
-
-.lot-filter {
-  height: 36px;
-  padding: 0 12px;
-  background: var(--bg-elevated);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-sm);
-  color: var(--text-primary);
-  font-family: var(--font);
-  font-size: 13px;
-  outline: none;
-  cursor: pointer;
-  transition: var(--transition);
-}
-
-.lot-filter:focus {
-  border-color: var(--warning);
-  box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.15);
-}
-
-#toolbar-impound {
-  flex-wrap: wrap;
-  gap: 12px;
-}
-
-#toolbar-impound .toolbar-actions {
-  flex-shrink: 0;
 }
 
 /* ── Content ────────────────────────────────────────────────────────────── */
@@ -538,39 +362,20 @@ html.nui-embed .garage-panel {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
   gap: 16px;
-  align-items: stretch;
 }
 
 /* ── Vehicle Card ───────────────────────────────────────────────────────── */
 
 .vehicle-card {
-  position: relative;
   background: var(--bg-card);
   border: 1px solid var(--border);
   border-radius: var(--radius-lg);
   overflow: hidden;
-  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1),
-              box-shadow 0.3s ease,
-              border-color 0.3s ease,
-              background 0.3s ease;
+  transition: var(--transition);
   display: flex;
   flex-direction: column;
-  height: 100%;
-  animation: cardIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) backwards;
+  animation: cardIn 0.4s ease backwards;
 }
-
-.vehicle-card::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  border-radius: inherit;
-  opacity: 0;
-  background: radial-gradient(600px circle at var(--mouse-x, 50%) var(--mouse-y, 0%), rgba(59, 130, 246, 0.08), transparent 40%);
-  pointer-events: none;
-  transition: opacity 0.3s ease;
-}
-
-.vehicle-card:hover::after { opacity: 1; }
 
 @keyframes cardIn {
   from { opacity: 0; transform: translateY(12px); }
@@ -586,53 +391,41 @@ html.nui-embed .garage-panel {
 
 .vehicle-card:hover {
   background: var(--bg-card-hover);
-  border-color: rgba(59, 130, 246, 0.25);
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(59, 130, 246, 0.1);
-  transform: translateY(-4px);
+  border-color: var(--border-hover);
+  box-shadow: var(--shadow-card);
+  transform: translateY(-2px);
 }
 
 .vehicle-card.is-favorite {
-  border-color: rgba(245, 158, 11, 0.25);
-}
-
-.vehicle-card.is-favorite:hover {
-  border-color: rgba(245, 158, 11, 0.45);
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4), 0 0 24px rgba(245, 158, 11, 0.08);
+  border-color: rgba(245, 158, 11, 0.2);
 }
 
 .card-image-wrap {
   position: relative;
   height: 140px;
-  flex-shrink: 0;
-  background: linear-gradient(180deg, rgba(59, 130, 246, 0.08) 0%, transparent 100%);
+  background: linear-gradient(180deg, color-mix(in srgb, var(--mode-accent) 12%, transparent) 0%, transparent 100%);
   overflow: hidden;
 }
 
-.card-image-wrap::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(to top, rgba(14, 17, 23, 0.85) 0%, transparent 50%);
-  z-index: 1;
-  pointer-events: none;
+.card-image-wrap .card-image-fa {
+  width: 100%;
+  height: 100%;
 }
 
 .card-image-shine {
   position: absolute;
   inset: 0;
-  background: linear-gradient(105deg, transparent 40%, rgba(255, 255, 255, 0.06) 50%, transparent 60%);
-  transform: translateX(-100%);
-  z-index: 2;
   pointer-events: none;
+  background: radial-gradient(
+    circle at var(--mouse-x, 50%) var(--mouse-y, 30%),
+    rgba(255, 255, 255, 0.12) 0%,
+    transparent 55%
+  );
+  opacity: 0;
+  transition: opacity 0.25s ease;
 }
 
-.vehicle-card:hover .card-image-shine {
-  animation: imageShine 0.8s ease;
-}
-
-@keyframes imageShine {
-  to { transform: translateX(100%); }
-}
+.vehicle-card:hover .card-image-shine { opacity: 1; }
 
 .card-image {
   width: 100%;
@@ -640,7 +433,6 @@ html.nui-embed .garage-panel {
   object-fit: cover;
   object-position: center;
   transition: transform 0.4s ease;
-  background: #0a0c10;
 }
 
 .vehicle-card:hover .card-image { transform: scale(1.04); }
@@ -672,7 +464,6 @@ html.nui-embed .garage-panel {
   text-transform: uppercase;
   letter-spacing: 0.05em;
   backdrop-filter: blur(8px);
-  z-index: 3;
 }
 
 .card-badge--parked {
@@ -691,12 +482,6 @@ html.nui-embed .garage-panel {
   background: var(--danger-bg);
   color: var(--danger);
   border: 1px solid rgba(239, 68, 68, 0.25);
-  animation: impoundPulse 2s ease-in-out infinite;
-}
-
-@keyframes impoundPulse {
-  0%, 100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.2); }
-  50% { box-shadow: 0 0 12px 2px rgba(239, 68, 68, 0.15); }
 }
 
 .btn-favorite {
@@ -713,21 +498,7 @@ html.nui-embed .garage-panel {
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1),
-              background 0.2s ease;
-  z-index: 3;
-}
-
-.btn-favorite:hover { transform: scale(1.12); }
-
-.btn-favorite.active {
-  animation: favPop 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
-}
-
-@keyframes favPop {
-  0% { transform: scale(1); }
-  40% { transform: scale(1.3); }
-  100% { transform: scale(1); }
+  transition: var(--transition);
 }
 
 .btn-favorite svg {
@@ -748,24 +519,29 @@ html.nui-embed .garage-panel {
   padding: 14px 16px 16px;
   display: flex;
   flex-direction: column;
+  gap: 12px;
   flex: 1;
-  min-height: 0;
 }
 
-/* Fixed-height info block – keeps all cards aligned */
-.card-info-block {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  flex-shrink: 0;
-}
-
+.card-info-block,
 .card-details-block {
   display: flex;
   flex-direction: column;
-  gap: 12px;
-  flex: 1;
-  margin-top: 12px;
+  gap: 10px;
+}
+
+.card-note-slot { min-height: 28px; }
+.card-note-slot:not(.has-content) .card-note {
+  visibility: hidden;
+  min-height: 0;
+  padding: 0;
+  border: none;
+  background: transparent;
+}
+
+.card-model--empty {
+  visibility: hidden;
+  min-height: 16px;
 }
 
 .card-title-row {
@@ -773,7 +549,6 @@ html.nui-embed .garage-panel {
   align-items: flex-start;
   justify-content: space-between;
   gap: 8px;
-  min-height: 42px;
 }
 
 .card-names { min-width: 0; flex: 1; }
@@ -785,23 +560,12 @@ html.nui-embed .garage-panel {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  line-height: 1.3;
 }
 
 .card-model {
   font-size: 12px;
   color: var(--text-muted);
   margin-top: 2px;
-  line-height: 1.3;
-  height: 16px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.card-model--empty {
-  visibility: hidden;
-  user-select: none;
 }
 
 .card-plate {
@@ -817,17 +581,6 @@ html.nui-embed .garage-panel {
   flex-shrink: 0;
 }
 
-.card-note-slot {
-  height: 32px;
-  flex-shrink: 0;
-  overflow: hidden;
-}
-
-.card-note-slot:not(.has-content) .card-note {
-  visibility: hidden;
-  user-select: none;
-}
-
 .card-note {
   font-size: 11px;
   color: var(--text-secondary);
@@ -837,99 +590,6 @@ html.nui-embed .garage-panel {
   border-radius: var(--radius-sm);
   border-left: 2px solid var(--accent);
   line-height: 1.4;
-  height: 32px;
-  display: flex;
-  align-items: center;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  transition: border-color 0.2s ease, background 0.2s ease;
-}
-
-.vehicle-card:hover .card-note {
-  border-left-color: #6366f1;
-  background: rgba(36, 43, 58, 0.8);
-}
-
-/* Impound fee slot – only visible on impound tab */
-.card-extra-slot {
-  height: 0;
-  overflow: hidden;
-  flex-shrink: 0;
-}
-
-.card-category-tag {
-  height: 22px;
-  flex-shrink: 0;
-  font-size: 10px;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-  color: var(--mode-accent);
-  display: flex;
-  align-items: center;
-}
-
-.card-impound-location {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  height: 52px;
-  flex-shrink: 0;
-  padding: 10px 12px;
-  background: rgba(245, 158, 11, 0.08);
-  border: 1px solid rgba(245, 158, 11, 0.22);
-  border-radius: var(--radius-sm);
-  animation: impoundFeeIn 0.4s ease backwards;
-}
-
-.card-impound-location svg {
-  width: 22px;
-  height: 22px;
-  color: var(--warning);
-  flex-shrink: 0;
-}
-
-.impound-location-label {
-  display: block;
-  font-size: 9px;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  color: var(--text-muted);
-  line-height: 1.2;
-}
-
-.impound-location-name {
-  display: block;
-  font-size: 13px;
-  font-weight: 600;
-  color: var(--warning);
-  line-height: 1.3;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.vehicle-card--impound .card-info-block {
-  gap: 8px;
-}
-
-.vehicle-card--impound .impound-fee {
-  height: 36px;
-  flex-shrink: 0;
-}
-
-.vehicle-card--impound .card-note-slot {
-  height: 32px;
-}
-
-.vehicle-card--impound .card-actions .btn {
-  flex: 1;
-}
-
-.vehicle-card--impound .btn-favorite {
-  display: none;
 }
 
 /* ── Stats Bars ─────────────────────────────────────────────────────────── */
@@ -944,14 +604,6 @@ html.nui-embed .garage-panel {
   display: flex;
   align-items: center;
   gap: 10px;
-  opacity: 0;
-  transform: translateX(-6px);
-  animation: statRowIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-  animation-delay: calc(0.15s + var(--stat-index, 0) * 0.07s);
-}
-
-@keyframes statRowIn {
-  to { opacity: 1; transform: translateX(0); }
 }
 
 .stat-icon {
@@ -989,38 +641,22 @@ html.nui-embed .garage-panel {
 }
 
 .stat-bar {
-  height: 5px;
+  height: 4px;
   background: rgba(255, 255, 255, 0.06);
-  border-radius: 3px;
+  border-radius: 2px;
   overflow: hidden;
-  position: relative;
 }
 
 .stat-bar-fill {
   height: 100%;
   width: 0;
-  border-radius: 3px;
-  animation: barFill 0.9s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-  animation-delay: calc(0.25s + var(--stat-index, 0) * 0.1s);
-  position: relative;
+  border-radius: 2px;
+  animation: barGrow 0.7s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+  animation-delay: calc(0.08s + var(--stat-index, 0) * 0.06s);
 }
 
-.stat-bar-fill::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.25), transparent);
-  animation: barShimmer 1.5s ease infinite;
-  animation-delay: calc(0.8s + var(--stat-index, 0) * 0.1s);
-}
-
-@keyframes barFill {
+@keyframes barGrow {
   to { width: var(--bar-width, 0%); }
-}
-
-@keyframes barShimmer {
-  0% { transform: translateX(-100%); }
-  100% { transform: translateX(200%); }
 }
 
 .stat-bar-fill--fuel { background: linear-gradient(90deg, var(--fuel), #0891b2); }
@@ -1036,10 +672,8 @@ html.nui-embed .garage-panel {
   gap: 6px;
   font-size: 12px;
   color: var(--text-secondary);
-  padding-top: 8px;
+  padding-top: 4px;
   border-top: 1px solid var(--border);
-  min-height: 34px;
-  flex-shrink: 0;
 }
 
 .card-mileage svg {
@@ -1058,9 +692,7 @@ html.nui-embed .garage-panel {
 .card-actions {
   display: flex;
   gap: 8px;
-  margin-top: 12px;
-  flex-shrink: 0;
-  min-height: 38px;
+  margin-top: auto;
 }
 
 .btn {
@@ -1075,32 +707,9 @@ html.nui-embed .garage-panel {
   font-size: 12px;
   font-weight: 600;
   cursor: pointer;
-  transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1),
-              box-shadow 0.2s ease,
-              background 0.2s ease;
+  transition: var(--transition);
   flex: 1;
   white-space: nowrap;
-  position: relative;
-  overflow: hidden;
-}
-
-.btn::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(105deg, transparent 40%, rgba(255, 255, 255, 0.15) 50%, transparent 60%);
-  transform: translateX(-100%);
-  transition: none;
-}
-
-.btn:hover::before {
-  animation: btnShine 0.6s ease;
-}
-
-.btn:active { transform: scale(0.97); }
-
-@keyframes btnShine {
-  to { transform: translateX(100%); }
 }
 
 .btn svg { width: 14px; height: 14px; }
@@ -1112,7 +721,7 @@ html.nui-embed .garage-panel {
 
 .btn-primary:hover {
   background: color-mix(in srgb, var(--mode-accent, var(--accent)) 85%, #000);
-  box-shadow: 0 4px 16px color-mix(in srgb, var(--mode-accent) 30%, transparent);
+  box-shadow: 0 4px 16px var(--accent-glow);
 }
 
 .btn-success {
@@ -1172,11 +781,16 @@ html.nui-embed .garage-panel {
   margin-bottom: 16px;
 }
 
-.empty-icon svg {
+.empty-icon svg,
+.empty-icon .icon,
+.empty-icon i {
   width: 36px;
   height: 36px;
+  font-size: 32px;
   color: var(--text-muted);
 }
+
+.vehicle-card--impound .btn-favorite { display: none; }
 
 .empty-state h3 {
   font-size: 16px;
@@ -1226,29 +840,60 @@ html.nui-embed .garage-panel {
 /* ── Modal ──────────────────────────────────────────────────────────────── */
 
 .modal {
-  position: fixed;
+  position: absolute;
   inset: 0;
   z-index: 2000;
   display: flex;
   align-items: center;
   justify-content: center;
+  pointer-events: none;
+}
+
+.modal:not(.hidden) {
+  pointer-events: auto;
+}
+
+.modal.hidden {
+  display: none !important;
+  pointer-events: none !important;
 }
 
 .modal-backdrop {
   position: absolute;
   inset: 0;
+  z-index: 0;
   background: rgba(0, 0, 0, 0.6);
   backdrop-filter: blur(2px);
+  cursor: pointer;
 }
 
 .modal-dialog {
   position: relative;
+  z-index: 1;
   width: min(420px, 90vw);
+  max-height: 90%;
+  overflow: auto;
   background: var(--bg-panel);
   border: 1px solid var(--border);
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-panel);
   animation: slideUp 0.25s ease;
+  pointer-events: auto;
+  cursor: default;
+}
+
+.card-actions .btn,
+.modal-footer .btn,
+.modal-header .btn-close {
+  cursor: pointer;
+  pointer-events: auto;
+}
+
+.card-actions .btn .icon,
+.card-actions .btn i,
+.btn-favorite .icon,
+.btn-favorite i {
+  pointer-events: none;
 }
 
 .modal-header {
@@ -1323,6 +968,7 @@ html.nui-embed .garage-panel {
 /* ── Toast ──────────────────────────────────────────────────────────────── */
 
 .toast {
+  pointer-events: none;
   position: fixed;
   bottom: 32px;
   left: 50%;
@@ -1354,32 +1000,67 @@ html.nui-embed .garage-panel {
   align-items: center;
   justify-content: space-between;
   padding: 8px 12px;
-  height: 36px;
   background: var(--danger-bg);
   border: 1px solid rgba(239, 68, 68, 0.2);
   border-radius: var(--radius-sm);
   font-size: 12px;
-  animation: impoundFeeIn 0.4s ease backwards;
-  animation-delay: 0.1s;
-}
-
-@keyframes impoundFeeIn {
-  from { opacity: 0; transform: scale(0.97); }
-  to { opacity: 1; transform: scale(1); }
 }
 
 .impound-fee span { color: var(--text-secondary); }
 .impound-fee strong { color: var(--danger); font-weight: 700; }
 
-/* ── Responsive ─────────────────────────────────────────────────────────── */
-
-@media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
-  }
+.impound-info-banner {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex: 1;
+  min-width: 200px;
+  padding: 8px 12px;
+  border-radius: var(--radius-sm);
+  background: var(--warning-bg);
+  border: 1px solid rgba(245, 158, 11, 0.25);
+  font-size: 12px;
+  color: var(--text-secondary);
 }
+
+.impound-info-banner strong { color: var(--warning); }
+
+.card-category-tag {
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-muted);
+}
+
+.card-impound-location {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 8px 10px;
+  border-radius: var(--radius-sm);
+  background: var(--danger-bg);
+  border: 1px solid rgba(239, 68, 68, 0.2);
+  font-size: 12px;
+}
+
+.impound-location-label {
+  display: block;
+  font-size: 10px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.impound-location-name {
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+#toolbar-impound .toolbar-actions { margin-left: auto; }
+#toolbar-impound .btn-close { flex-shrink: 0; }
+
+/* ── Responsive ─────────────────────────────────────────────────────────── */
 
 @media (max-width: 768px) {
   .garage-header { flex-wrap: wrap; }

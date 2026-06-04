@@ -1,5 +1,5 @@
 /**
- * EC Garage – Creator UI Preview
+ * EC Garage – Creator (Neuaufbau, ec_chat Theme)
  */
 
 const STEPS = [
@@ -13,9 +13,13 @@ const STEPS = [
 
 const TYPE_ICONS = VEHICLE_ICONS;
 
+function newGarageId() {
+  return `garage_${Date.now()}`;
+}
+
 function emptyGarage(overrides = {}) {
   return {
-    id: Date.now(),
+    id: newGarageId(),
     name: 'Neue Garage',
     type: 'land',
     interact: null,
@@ -83,11 +87,10 @@ const state = {
   placementPos: { x: 884.88, y: -43.56, z: 78.76, h: 58.0 },
 };
 
-const $ = (s) => document.querySelector(s);
-const $$ = (s) => document.querySelectorAll(s);
+const $ = (s, root = document) => root.querySelector(s);
 
 function garage() {
-  return state.garages.find((g) => g.id === state.activeGarageId);
+  return state.garages.find((g) => String(g.id) === String(state.activeGarageId));
 }
 
 function fmt(n, d = 2) {
@@ -101,36 +104,55 @@ function fmtCoord(c) {
 
 function showToast(msg) {
   const t = $('#toast');
-  $('#toast-message').textContent = msg;
+  $('#toast-message', t).textContent = msg;
   t.classList.remove('hidden');
   clearTimeout(showToast._t);
   showToast._t = setTimeout(() => t.classList.add('hidden'), 2600);
 }
 
+function updateStepProgress() {
+  const pct = ((state.step + 1) / STEPS.length) * 100;
+  const fill = $('#step-progress-fill');
+  const label = $('#step-progress-label');
+  if (fill) fill.style.width = `${pct}%`;
+  if (label) label.textContent = `Schritt ${state.step + 1} / ${STEPS.length}`;
+}
+
 function renderStepNav() {
   $('#step-nav').innerHTML = STEPS.map((s, i) => `
-    <button class="step-btn${i === state.step ? ' active' : ''}${i < state.step ? ' done' : ''}" data-step="${i}">
-      <span class="step-num">${i + 1}</span>
-      ${s.title}
+    <button type="button" class="step-btn${i === state.step ? ' active' : ''}${i < state.step ? ' done' : ''}" data-step="${i}">
+      <span class="step-num">${i < state.step ? '✓' : i + 1}</span>
+      <span class="step-label">${s.title}</span>
     </button>`).join('');
+  updateStepProgress();
 }
 
 function renderGarageList() {
   $('#garage-list').innerHTML = state.garages.map((g) => `
-    <div class="garage-item${g.id === state.activeGarageId ? ' active' : ''}" data-id="${g.id}">
+    <div class="garage-item${String(g.id) === String(state.activeGarageId) ? ' active' : ''}" data-id="${g.id}">
       <div class="garage-item-icon garage-item-icon--${g.type}">${TYPE_ICONS[g.type]}</div>
       <div class="garage-item-info">
-        <div class="garage-item-name">${g.name}</div>
+        <div class="garage-item-name">${escapeHtml(g.name)}</div>
         <div class="garage-item-meta">${g.spawnSlots.length} Spawn · ${g.parkMode === 'zone' ? 'Zone' : g.parkSlots.length + ' Park'}</div>
       </div>
     </div>`).join('');
 }
 
+function escapeHtml(s) {
+  return String(s)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
+}
+
 function stepNavButtons() {
-  const prev = state.step > 0 ? `<button class="btn btn-ghost" data-nav="prev">${ICONS.arrowLeft()} Zurück</button>` : '<span></span>';
+  const prev = state.step > 0
+    ? `<button type="button" class="btn btn-ghost" data-nav="prev">${ICONS.arrowLeft()} Zurück</button>`
+    : '<span></span>';
   const next = state.step < STEPS.length - 1
-    ? `<button class="btn btn-success" data-nav="next">Weiter ${ICONS.arrowRight()}</button>`
-    : `<button class="btn btn-success" id="btn-save-inline">${ICONS.save()} Garage speichern</button>`;
+    ? `<button type="button" class="btn btn-success" data-nav="next">Weiter ${ICONS.arrowRight()}</button>`
+    : `<button type="button" class="btn btn-success" data-action="save-inline">${ICONS.save()} Garage speichern</button>`;
   return `<div class="step-nav-btns">${prev}${next}</div>`;
 }
 
@@ -138,8 +160,8 @@ function renderBasics(g) {
   return `
     <div class="form-grid">
       <div class="field full">
-        <label>Garagen-Name</label>
-        <input class="input" id="f-name" value="${g.name}" placeholder="z.B. Legion Square Garage" />
+        <label for="f-name">Garagen-Name</label>
+        <input class="input" id="f-name" value="${escapeHtml(g.name)}" placeholder="z.B. Legion Square Garage" />
       </div>
       <div class="field full">
         <label>Fahrzeugtyp</label>
@@ -160,11 +182,11 @@ function renderInteract(g) {
     <div class="pos-card">
       <div class="pos-card-head">
         <h3>Interaktionspunkt</h3>
-        <button class="btn btn-success" data-action="take-pos" data-target="interact">
+        <button type="button" class="btn btn-success" data-action="take-pos" data-target="interact">
           ${ICONS.mapPin()} Aktuelle Position
         </button>
       </div>
-      <p class="field-hint" style="margin-bottom:14px">Hier öffnen Spieler das Garagen-UI mit <kbd style="padding:2px 6px;background:var(--bg-elevated);border-radius:4px;font-size:11px">E</kbd></p>
+      <p class="field-hint" style="margin-bottom:14px">Hier öffnen Spieler das Garagen-UI mit <kbd>E</kbd></p>
       ${set ? `
         <div class="pos-coords">
           <div class="pos-coord set"><span>X</span><strong>${fmt(g.interact.x)}</strong></div>
@@ -172,7 +194,7 @@ function renderInteract(g) {
           <div class="pos-coord set"><span>Z</span><strong>${fmt(g.interact.z)}</strong></div>
           <div class="pos-coord set"><span>H</span><strong>${fmt(g.interact.h, 1)}°</strong></div>
         </div>
-        <button class="btn btn-ghost" data-action="place-slot" data-target="interact">Im Hologramm-Modus bearbeiten</button>
+        <button type="button" class="btn btn-ghost" data-action="place-slot" data-target="interact">Im Hologramm-Modus bearbeiten</button>
       ` : `
         <div class="pos-empty">
           ${TYPE_ICONS.land}
@@ -187,10 +209,10 @@ function renderInteract(g) {
           Prop spawnen
         </label>
       </div>
-      <p class="field-hint" style="margin-bottom:12px">z.&nbsp;B. Ticketautomat <code>prop_park_ticket_01</code> an fester Position</p>
+      <p class="field-hint" style="margin-bottom:12px">z.&nbsp;B. Ticketautomat <code>prop_park_ticket_01</code></p>
       <div class="field" style="margin-bottom:12px">
-        <label>Prop-Modell</label>
-        <input class="input" id="f-prop-model" value="${g.propModel || 'prop_park_ticket_01'}" placeholder="prop_park_ticket_01" ${g.propEnabled ? '' : 'disabled'} />
+        <label for="f-prop-model">Prop-Modell</label>
+        <input class="input" id="f-prop-model" value="${escapeHtml(g.propModel || 'prop_park_ticket_01')}" ${g.propEnabled ? '' : 'disabled'} />
       </div>
       ${g.propEnabled && g.prop ? `
         <div class="pos-coords">
@@ -199,9 +221,9 @@ function renderInteract(g) {
           <div class="pos-coord set"><span>Z</span><strong>${fmt(g.prop.z)}</strong></div>
           <div class="pos-coord set"><span>H</span><strong>${fmt(g.prop.h, 1)}°</strong></div>
         </div>
-        <button class="btn btn-ghost" data-action="place-slot" data-target="prop">Position im Hologramm-Modus bearbeiten</button>
+        <button type="button" class="btn btn-ghost" data-action="place-slot" data-target="prop">Position im Hologramm-Modus bearbeiten</button>
       ` : ''}
-      <button class="btn btn-success" data-action="take-pos-prop" style="margin-top:10px" ${g.propEnabled ? '' : 'disabled'}>
+      <button type="button" class="btn btn-success" data-action="take-pos-prop" ${g.propEnabled ? '' : 'disabled'}>
         ${ICONS.mapPin()} Aktuelle Position (Prop)
       </button>
     </div>${stepNavButtons()}`;
@@ -209,7 +231,7 @@ function renderInteract(g) {
 
 function renderSlotList(slots, type, label) {
   if (!slots.length) {
-    return `<div class="slots-empty">Noch keine ${label}. Klicke „Slot hinzufügen" um das Hologramm zu platzieren.</div>`;
+    return `<div class="slots-empty">Noch keine ${label}. Klicke „Slot hinzufügen".</div>`;
   }
   return `<div class="slot-list">${slots.map((s, i) => `
     <div class="slot-item${type === 'park' ? ' slot-item--park' : ''}">
@@ -219,12 +241,8 @@ function renderSlotList(slots, type, label) {
         <span>${fmtCoord(s)}</span>
       </div>
       <div class="slot-actions">
-        <button class="btn-icon" data-action="edit-slot" data-type="${type}" data-index="${i}" title="Bearbeiten">
-          ${ICONS.pen()}
-        </button>
-        <button class="btn-icon danger" data-action="delete-slot" data-type="${type}" data-index="${i}" title="Löschen">
-          ${ICONS.trash()}
-        </button>
+        <button type="button" class="btn-icon" data-action="edit-slot" data-type="${type}" data-index="${i}" title="Bearbeiten">${ICONS.pen()}</button>
+        <button type="button" class="btn-icon danger" data-action="delete-slot" data-type="${type}" data-index="${i}" title="Löschen">${ICONS.trash()}</button>
       </div>
     </div>`).join('')}</div>`;
 }
@@ -237,7 +255,7 @@ function renderSpawn(g) {
           <h3>Auspark-Slots</h3>
           <p>Fahrzeuge spawnen an diesen Positionen (${g.spawnSlots.length} definiert)</p>
         </div>
-        <button class="btn btn-success" data-action="place-slot" data-target="spawn-new">
+        <button type="button" class="btn btn-success" data-action="place-slot" data-target="spawn-new">
           ${ICONS.plus()} Slot hinzufügen
         </button>
       </div>
@@ -248,8 +266,8 @@ function renderSpawn(g) {
 function renderPark(g) {
   return `
     <div class="mode-toggle">
-      <button class="mode-btn${g.parkMode === 'zone' ? ' active' : ''}" data-park-mode="zone">Einpark-Zone</button>
-      <button class="mode-btn${g.parkMode === 'slot' ? ' active' : ''}" data-park-mode="slot">Feste Slots</button>
+      <button type="button" class="mode-btn${g.parkMode === 'zone' ? ' active' : ''}" data-park-mode="zone">Einpark-Zone</button>
+      <button type="button" class="mode-btn${g.parkMode === 'slot' ? ' active' : ''}" data-park-mode="slot">Feste Slots</button>
     </div>
     ${g.parkMode === 'zone' ? `
       <div class="zone-settings">
@@ -264,9 +282,9 @@ function renderPark(g) {
         <div class="slots-header">
           <div>
             <h3>Einpark-Slots</h3>
-            <p>Feste Positionen zum Einparken (${g.parkSlots.length} definiert)</p>
+            <p>Feste Positionen (${g.parkSlots.length} definiert)</p>
           </div>
-          <button class="btn btn-success" data-action="place-slot" data-target="park-new">
+          <button type="button" class="btn btn-success" data-action="place-slot" data-target="park-new">
             ${ICONS.plus()} Slot hinzufügen
           </button>
         </div>
@@ -285,15 +303,15 @@ function renderBlip(g) {
         </label>
       </div>
       <div class="field">
-        <label>Blip-Label</label>
-        <input class="input" id="f-blip-label" value="${g.blipLabel || g.name}" placeholder="Kartenname" />
+        <label for="f-blip-label">Blip-Label</label>
+        <input class="input" id="f-blip-label" value="${escapeHtml(g.blipLabel || g.name)}" />
       </div>
       <div class="field">
-        <label>Job-Beschränkung <span class="field-hint">(leer = öffentlich)</span></label>
-        <input class="input" id="f-job" value="${g.job}" placeholder="z.B. police, ambulance" />
+        <label for="f-job">Job-Beschränkung <span class="field-hint">(leer = öffentlich)</span></label>
+        <input class="input" id="f-job" value="${escapeHtml(g.job)}" placeholder="z.B. police" />
       </div>
       <div class="field">
-        <label>Mindest-Rang</label>
+        <label for="f-grade">Mindest-Rang</label>
         <input class="input" type="number" id="f-grade" min="0" value="${g.minGrade}" />
       </div>
     </div>${stepNavButtons()}`;
@@ -305,7 +323,7 @@ function renderReview(g) {
     <div class="review-grid">
       <div class="review-card">
         <h4>Name</h4>
-        <p>${g.name}</p>
+        <p>${escapeHtml(g.name)}</p>
         <span class="review-tag review-tag--${g.type}">${typeLabel[g.type]}</span>
       </div>
       <div class="review-card">
@@ -323,102 +341,112 @@ function renderReview(g) {
       </div>
       <div class="review-card">
         <h4>Blip</h4>
-        <p>${g.blipEnabled ? g.blipLabel || g.name : 'Deaktiviert'}</p>
+        <p>${g.blipEnabled ? escapeHtml(g.blipLabel || g.name) : 'Deaktiviert'}</p>
       </div>
       <div class="review-card">
         <h4>Zugriff</h4>
-        <p>${g.job ? g.job + ' (Rang ' + g.minGrade + '+)' : 'Öffentlich'}</p>
+        <p>${g.job ? escapeHtml(g.job) + ' (Rang ' + g.minGrade + '+)' : 'Öffentlich'}</p>
       </div>
-      <div class="review-card">
+      <div class="review-card full">
         <h4>Welt-Objekt</h4>
-        <p>${g.propEnabled && g.prop ? g.propModel : 'Keins'}</p>
+        <p>${g.propEnabled && g.prop ? escapeHtml(g.propModel) : 'Keins'}</p>
         <p class="sub">${g.prop ? fmtCoord(g.prop) : ''}</p>
       </div>
     </div>${stepNavButtons()}`;
 }
 
+const STEP_RENDERERS = {
+  basics: renderBasics,
+  interact: renderInteract,
+  spawn: renderSpawn,
+  park: renderPark,
+  blip: renderBlip,
+  review: renderReview,
+};
+
 function renderStep() {
   const g = garage();
-  if (!g) return;
+  if (!g) {
+    $('#creator-body').innerHTML = '<p class="field-hint">Keine Garage ausgewählt.</p>';
+    return;
+  }
 
   const step = STEPS[state.step];
   $('#step-title').textContent = step.title;
   $('#step-desc').textContent = step.desc;
-
-  const renderers = {
-    basics: renderBasics,
-    interact: renderInteract,
-    spawn: renderSpawn,
-    park: renderPark,
-    blip: renderBlip,
-    review: renderReview,
-  };
-
-  $('#creator-body').innerHTML = renderers[step.id](g);
+  $('#creator-body').innerHTML = STEP_RENDERERS[step.id](g);
   renderStepNav();
   renderGarageList();
-  bindStepEvents();
 }
 
-function bindStepEvents() {
+function onCreatorBodyInput(e) {
+  const g = garage();
+  if (!g) return;
+  const t = e.target;
+
+  if (t.id === 'f-name') {
+    g.name = t.value;
+    renderGarageList();
+    return;
+  }
+  if (t.id === 'f-blip-label') { g.blipLabel = t.value; return; }
+  if (t.id === 'f-job') { g.job = t.value; return; }
+  if (t.id === 'f-prop-model') { g.propModel = t.value.trim(); return; }
+  if (t.id === 'f-grade') { g.minGrade = parseInt(t.value, 10) || 0; return; }
+  if (t.id === 'park-radius') {
+    g.parkRadius = parseInt(t.value, 10);
+    const rv = document.querySelector('.range-value');
+    if (rv) rv.textContent = `${g.parkRadius}m`;
+  }
+}
+
+function onCreatorBodyChange(e) {
+  const g = garage();
+  if (!g) return;
+  const t = e.target;
+
+  if (t.id === 'f-blip') { g.blipEnabled = t.checked; return; }
+  if (t.id === 'f-prop-enabled') {
+    g.propEnabled = t.checked;
+    if (!g.propEnabled) g.prop = null;
+    renderStep();
+  }
+}
+
+function onCreatorBodyClick(e) {
   const g = garage();
   if (!g) return;
 
-  const nameEl = $('#f-name');
-  if (nameEl) nameEl.oninput = (e) => { g.name = e.target.value; renderGarageList(); };
-
-  $$('.type-option').forEach((btn) => {
-    btn.onclick = () => { g.type = btn.dataset.type; renderStep(); };
-  });
-
-  const blipEl = $('#f-blip');
-  if (blipEl) blipEl.onchange = (e) => { g.blipEnabled = e.target.checked; };
-
-  const blipLabel = $('#f-blip-label');
-  if (blipLabel) blipLabel.oninput = (e) => { g.blipLabel = e.target.value; };
-
-  const jobEl = $('#f-job');
-  if (jobEl) jobEl.oninput = (e) => { g.job = e.target.value; };
-
-  const gradeEl = $('#f-grade');
-  if (gradeEl) gradeEl.oninput = (e) => { g.minGrade = parseInt(e.target.value, 10) || 0; };
-
-  const propEnabledEl = $('#f-prop-enabled');
-  if (propEnabledEl) {
-    propEnabledEl.onchange = (e) => {
-      g.propEnabled = e.target.checked;
-      if (!g.propEnabled) g.prop = null;
-      renderStep();
-    };
+  const typeBtn = e.target.closest('.type-option');
+  if (typeBtn?.dataset.type) {
+    g.type = typeBtn.dataset.type;
+    renderStep();
+    return;
   }
 
-  const propModelEl = $('#f-prop-model');
-  if (propModelEl) propModelEl.oninput = (e) => { g.propModel = e.target.value.trim(); };
-
-  const radiusEl = $('#park-radius');
-  if (radiusEl) {
-    radiusEl.oninput = (e) => {
-      g.parkRadius = parseInt(e.target.value, 10);
-      $('.range-value').textContent = g.parkRadius + 'm';
-    };
+  const modeBtn = e.target.closest('[data-park-mode]');
+  if (modeBtn) {
+    g.parkMode = modeBtn.dataset.parkMode;
+    renderStep();
+    return;
   }
 
-  $$('[data-park-mode]').forEach((btn) => {
-    btn.onclick = () => { g.parkMode = btn.dataset.parkMode; renderStep(); };
-  });
+  const navBtn = e.target.closest('[data-nav]');
+  if (navBtn) {
+    state.step += navBtn.dataset.nav === 'next' ? 1 : -1;
+    renderStep();
+    return;
+  }
 
-  $$('[data-nav]').forEach((btn) => {
-    btn.onclick = () => {
-      state.step += btn.dataset.nav === 'next' ? 1 : -1;
-      renderStep();
-    };
-  });
+  const actionBtn = e.target.closest('[data-action]');
+  if (!actionBtn) return;
 
-  $('#btn-save-inline')?.addEventListener('click', saveGarage);
-
-  $$('[data-action]').forEach((btn) => {
-    btn.onclick = () => handleAction(btn.dataset.action, btn.dataset);
-  });
+  const { action } = actionBtn.dataset;
+  if (action === 'save-inline') {
+    saveGarage();
+    return;
+  }
+  handleAction(action, actionBtn.dataset);
 }
 
 function handleAction(action, data) {
@@ -428,7 +456,7 @@ function handleAction(action, data) {
   switch (action) {
     case 'take-pos':
       fetchCoords().then((coords) => {
-        g.interact = coords;
+        g.interact = { ...coords };
         state.placementPos = { ...coords };
         showToast('Interaktionspunkt übernommen');
         renderStep();
@@ -443,7 +471,7 @@ function handleAction(action, data) {
       });
       break;
     case 'place-slot':
-      startPlacement(data.target, data.type ? parseInt(data.index, 10) : null);
+      startPlacement(data.target);
       break;
     case 'edit-slot':
       startPlacement(`${data.type}-edit`, parseInt(data.index, 10));
@@ -458,8 +486,10 @@ function handleAction(action, data) {
   }
 }
 
-function startPlacement(target, index) {
+function startPlacement(target, index = null) {
   const g = garage();
+  if (!g) return;
+
   let label = 'Position';
   let pos = { ...state.placementPos };
 
@@ -485,9 +515,14 @@ function startPlacement(target, index) {
   state.placementPos = pos;
   setPlacementActive(true);
 
-  const iconEl = $('#hologram')?.querySelector('.hologram-icon');
-  if (iconEl && g) {
-    iconEl.innerHTML = VEHICLE_ICONS[g.type] || VEHICLE_ICONS.land;
+  const iconEl = $('#hologram-icon');
+  if (iconEl) iconEl.innerHTML = VEHICLE_ICONS[g.type] || VEHICLE_ICONS.land;
+
+  const confirmBtn = $('#placement-confirm');
+  if (confirmBtn) {
+    confirmBtn.innerHTML = target.includes('spawn') || target.includes('park')
+      ? `${ICONS.check()} Position speichern`
+      : `${ICONS.check()} Übernehmen`;
   }
 
   updatePlacementUI();
@@ -496,6 +531,8 @@ function startPlacement(target, index) {
 
 function confirmPlacement() {
   const g = garage();
+  if (!g || !state.placement) return;
+
   const { target, index } = state.placement;
   const pos = { ...state.placementPos };
 
@@ -526,8 +563,8 @@ function updatePlacementUI() {
   $('#coord-x').textContent = fmt(p.x);
   $('#coord-y').textContent = fmt(p.y);
   $('#coord-z').textContent = fmt(p.z);
-  $('#coord-h').textContent = fmt(p.h, 1) + '°';
-  $('#hologram-heading').textContent = fmt(p.h, 0) + '°';
+  $('#coord-h').textContent = `${fmt(p.h, 1)}°`;
+  $('#hologram-heading').textContent = `${fmt(p.h, 0)}°`;
 
   const holo = $('#hologram');
   if (holo) {
@@ -542,15 +579,13 @@ function movePlacement(dx, dy, dh) {
   const p = state.placementPos;
   p.x = Math.round((p.x + dx) * 100) / 100;
   p.y = Math.round((p.y + dy) * 100) / 100;
-  if (dh) {
-    p.h = ((p.h + dh) % 360 + 360) % 360;
-  }
+  if (dh) p.h = ((p.h + dh) % 360 + 360) % 360;
   updatePlacementUI();
 }
 
 function garagePayload(g) {
   return {
-    id: g.id,
+    id: String(g.id),
     name: g.name,
     type: g.type,
     interact: g.interact,
@@ -572,6 +607,7 @@ function garagePayload(g) {
 
 function saveGarage() {
   const g = garage();
+  if (!g) return showToast('Keine Garage aktiv');
   if (!g.name.trim()) return showToast('Name fehlt');
   if (!g.interact) return showToast('Interaktionspunkt fehlt');
   if (!g.spawnSlots.length) return showToast('Mindestens ein Auspark-Slot nötig');
@@ -585,8 +621,8 @@ function saveGarage() {
     })
       .then((r) => r.json())
       .then((res) => {
-        if (res.ok) showToast(`Garage „${g.name}" gespeichert`);
-        else showToast('Speichern fehlgeschlagen');
+        if (res.ok) showToast(`Garage „${g.name}" gespeichert — live aktiv`);
+        else showToast(res.message || 'Speichern fehlgeschlagen');
       })
       .catch(() => showToast('Speichern fehlgeschlagen'));
     return;
@@ -595,9 +631,11 @@ function saveGarage() {
 }
 
 function exportJson() {
-  const data = JSON.stringify(state.garages, null, 2);
-  navigator.clipboard?.writeText(data);
-  showToast('JSON in Zwischenablage kopiert');
+  const data = JSON.stringify(state.garages.map(garagePayload), null, 2);
+  navigator.clipboard?.writeText(data).then(
+    () => showToast('JSON in Zwischenablage kopiert'),
+    () => showToast('Kopieren fehlgeschlagen'),
+  );
 }
 
 function loadGaragesFromGame(list) {
@@ -608,78 +646,113 @@ function loadGaragesFromGame(list) {
   if (first?.interact) state.placementPos = { ...first.interact };
 }
 
+function seedPreviewGarages() {
+  if (state.garages.length) return;
+  state.garages = [
+    normalizeGarage({
+      id: 1,
+      name: 'Legion Square',
+      type: 'land',
+      interact: { x: 215.12, y: -809.5, z: 30.73, h: 70.0 },
+      spawnSlots: [{ x: 220.1, y: -806.2, z: 30.5, h: 68.0 }],
+    }),
+    normalizeGarage({ id: 2, name: 'LSIA Hangar', type: 'air' }),
+  ];
+  state.activeGarageId = 1;
+}
+
+const CREATOR_CLOSE_MS = 300;
+
 function openCreator(data) {
-  if (data?.garages) loadGaragesFromGame(data.garages);
+  if (data?.garages?.length) loadGaragesFromGame(data.garages);
   if (!state.garages.length) {
-    showToast('Keine Garagen geladen');
-    return;
+    const g = emptyGarage({ name: 'Neue Garage' });
+    state.garages.push(g);
+    state.activeGarageId = g.id;
   }
-  $('#creator').classList.remove('hidden');
+  if (data?.editGarageId != null) {
+    state.activeGarageId = data.editGarageId;
+    state.step = 0;
+  } else if (state.activeGarageId == null && state.garages.length) {
+    state.activeGarageId = state.garages[0].id;
+  }
+
+  const root = $('#creator');
+  const shell = document.querySelector('.creator-shell');
+  root.classList.remove('hidden');
+  shell?.classList.remove('is-closing');
   state.step = 0;
   renderStep();
 }
 
 function closeCreator() {
+  const root = $('#creator');
+  const shell = document.querySelector('.creator-shell');
+  if (root.classList.contains('hidden')) return;
   closePlacement();
-  $('#creator').classList.add('hidden');
-  if (window.EC_NUI?.isEmbed) {
-    window.parent.postMessage({ action: 'nuiClose', screen: 'creator' }, '*');
-  }
+  shell?.classList.add('is-closing');
+  setTimeout(() => {
+    root.classList.add('hidden');
+    shell?.classList.remove('is-closing');
+    if (window.EC_NUI?.isEmbed) {
+      window.parent.postMessage({ action: 'nuiClose', screen: 'creator' }, '*');
+    }
+  }, CREATOR_CLOSE_MS);
 }
 
 function initStaticIcons() {
-  $('.sidebar-logo').innerHTML = ICONS.gear();
   $('#btn-close').innerHTML = ICONS.close();
   $('#btn-new-garage').innerHTML = ICONS.plus();
   $('#btn-export').innerHTML = `${ICONS.export()} Export JSON`;
   $('#btn-save').innerHTML = `${ICONS.save()} Speichern`;
-  $('#placement-confirm').innerHTML = `${ICONS.check()} Slot speichern`;
-
-  const holoDefault = $('#hologram-icon-default');
-  if (holoDefault) holoDefault.innerHTML = VEHICLE_ICONS.land;
+  $('#placement-confirm').innerHTML = `${ICONS.check()} Übernehmen`;
+  const holo = $('#hologram-icon');
+  if (holo) holo.innerHTML = VEHICLE_ICONS.land;
 }
 
 function init() {
   initStaticIcons();
 
-  renderStepNav();
-  renderGarageList();
+  const body = $('#creator-body');
+  body.addEventListener('input', onCreatorBodyInput);
+  body.addEventListener('change', onCreatorBodyChange);
+  body.addEventListener('click', onCreatorBodyClick);
 
   $('#step-nav').addEventListener('click', (e) => {
     const btn = e.target.closest('.step-btn');
-    if (btn) { state.step = parseInt(btn.dataset.step, 10); renderStep(); }
-  });
-
-  $('#garage-list').addEventListener('click', (e) => {
-    const item = e.target.closest('.garage-item');
-    if (item) {
-      const id = item.dataset.id;
-      state.activeGarageId = /^\d+$/.test(id) ? parseInt(id, 10) : id;
+    if (btn) {
+      state.step = parseInt(btn.dataset.step, 10);
       renderStep();
     }
   });
 
-  $('#btn-new-garage').onclick = () => {
-    const g = emptyGarage({ name: 'Neue Garage ' + (state.garages.length + 1) });
+  $('#garage-list').addEventListener('click', (e) => {
+    const item = e.target.closest('.garage-item');
+    if (!item) return;
+    state.activeGarageId = item.dataset.id;
+    renderStep();
+  });
+
+  $('#btn-new-garage').addEventListener('click', () => {
+    const g = emptyGarage({ name: `Neue Garage ${state.garages.length + 1}` });
     state.garages.push(g);
     state.activeGarageId = g.id;
     state.step = 0;
     renderStep();
     showToast('Neue Garage erstellt');
-  };
+  });
 
-  $('#btn-close').onclick = closeCreator;
-  $('#btn-save').onclick = saveGarage;
-  $('#btn-export').onclick = exportJson;
-  $('#placement-cancel').onclick = closePlacement;
-  $('#placement-confirm').onclick = confirmPlacement;
+  $('#btn-close').addEventListener('click', closeCreator);
+  $('#btn-save').addEventListener('click', saveGarage);
+  $('#btn-export').addEventListener('click', exportJson);
+  $('#placement-cancel').addEventListener('click', closePlacement);
+  $('#placement-confirm').addEventListener('click', confirmPlacement);
 
   document.addEventListener('keydown', (e) => {
     if (!state.placement) {
       if (e.key === 'Escape' && !$('#creator').classList.contains('hidden')) closeCreator();
       return;
     }
-
     const step = e.shiftKey ? 0.5 : 0.15;
     switch (e.key) {
       case 'ArrowUp': e.preventDefault(); movePlacement(0, step, 0); break;
@@ -697,11 +770,21 @@ function init() {
     const data = event.data;
     if (data?.action === 'openCreator') openCreator(data);
     if (data?.action === 'closeCreator') closeCreator();
-    if (data?.action === 'placementSync' && data.position) {
+    if (data?.action === 'garagesSynced' && Array.isArray(data.garages)) {
+      loadGaragesFromGame(data.garages);
+      renderStep();
+    }
+    if (data?.action === 'placementSync' && data.position && state.placement) {
       state.placementPos = { ...data.position };
-      if (state.placement) updatePlacementUI();
+      updatePlacementUI();
     }
   });
 }
 
 init();
+
+const isFiveM = typeof GetParentResourceName === 'function';
+if (!isFiveM) {
+  seedPreviewGarages();
+  openCreator();
+}

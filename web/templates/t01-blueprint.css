@@ -1,0 +1,265 @@
+/* Vorlage 01 — Blueprint Archiv */
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&display=swap');
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; }
+
+body {
+  min-height: 100vh;
+  font-family: 'IBM Plex Mono', monospace;
+  background: #071018;
+  color: #7dd3fc;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(56, 189, 248, 0.07) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(56, 189, 248, 0.07) 1px, transparent 1px);
+  background-size: 24px 24px;
+  pointer-events: none;
+}
+
+.bp {
+  position: relative;
+  width: min(1180px, 100%);
+  height: min(780px, 92vh);
+  display: flex;
+  flex-direction: column;
+  border: 1px solid rgba(56, 189, 248, 0.45);
+  background: rgba(7, 16, 28, 0.96);
+  box-shadow: 0 0 0 1px rgba(56, 189, 248, 0.1), inset 0 0 80px rgba(14, 165, 233, 0.04);
+}
+
+.bp::before,
+.bp::after {
+  content: '';
+  position: absolute;
+  width: 18px;
+  height: 18px;
+  border-color: #38bdf8;
+  border-style: solid;
+  pointer-events: none;
+}
+.bp::before { top: 10px; left: 10px; border-width: 2px 0 0 2px; }
+.bp::after { bottom: 10px; right: 10px; border-width: 0 2px 2px 0; }
+
+.bp-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 18px 22px;
+  border-bottom: 1px dashed rgba(56, 189, 248, 0.35);
+}
+
+.bp-meta { font-size: 9px; letter-spacing: 0.2em; text-transform: uppercase; color: rgba(125, 211, 252, 0.5); }
+.bp-title { font-size: 20px; font-weight: 700; color: #e0f2fe; margin-top: 4px; }
+.bp-scale { font-size: 10px; color: rgba(125, 211, 252, 0.65); margin-top: 6px; }
+
+.bp-back {
+  font-size: 11px;
+  color: rgba(125, 211, 252, 0.7);
+  text-decoration: none;
+  border: 1px dashed rgba(56, 189, 248, 0.4);
+  padding: 6px 12px;
+}
+.bp-back:hover { color: #fff; border-style: solid; }
+
+.bp-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  padding: 12px 22px;
+  border-bottom: 1px dashed rgba(56, 189, 248, 0.2);
+}
+
+.bp-tabs { display: flex; gap: 6px; }
+.bp-tab {
+  font-family: inherit;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  padding: 8px 14px;
+  border: 1px solid rgba(56, 189, 248, 0.35);
+  background: transparent;
+  color: rgba(125, 211, 252, 0.7);
+  cursor: pointer;
+}
+.bp-tab.active {
+  background: rgba(14, 165, 233, 0.15);
+  color: #e0f2fe;
+  border-color: #38bdf8;
+}
+
+.bp-search {
+  flex: 1;
+  min-width: 180px;
+  font-family: inherit;
+  font-size: 12px;
+  padding: 8px 12px;
+  border: 1px dashed rgba(56, 189, 248, 0.35);
+  background: rgba(0, 0, 0, 0.25);
+  color: #e0f2fe;
+  outline: none;
+}
+.bp-search::placeholder { color: rgba(125, 211, 252, 0.4); }
+
+.bp-scroll {
+  flex: 1;
+  overflow: auto;
+  padding: 18px 22px 22px;
+}
+
+.bp-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.bp-card {
+  position: relative;
+  border: 1px solid rgba(56, 189, 248, 0.4);
+  background:
+    repeating-linear-gradient(0deg, transparent, transparent 11px, rgba(56, 189, 248, 0.03) 11px, rgba(56, 189, 248, 0.03) 12px),
+    rgba(10, 22, 38, 0.9);
+  padding: 0;
+  animation: bpIn 0.45s ease backwards;
+  animation-delay: calc(var(--i, 0) * 0.05s);
+}
+
+@keyframes bpIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: none; }
+}
+
+.bp-card__dim {
+  position: absolute;
+  top: 8px;
+  right: 10px;
+  font-size: 8px;
+  letter-spacing: 0.14em;
+  color: rgba(125, 211, 252, 0.45);
+}
+
+.bp-card__visual {
+  height: 120px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border-bottom: 1px dashed rgba(56, 189, 248, 0.3);
+  color: #38bdf8;
+  font-size: 48px;
+  opacity: 0.75;
+}
+
+.bp-card__visual span {
+  font-size: 9px;
+  letter-spacing: 0.2em;
+  margin-top: 6px;
+  color: rgba(125, 211, 252, 0.55);
+}
+
+.bp-card__body { padding: 14px 16px 16px; }
+
+.bp-card__head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.bp-card__name {
+  font-size: 13px;
+  font-weight: 700;
+  color: #e0f2fe;
+}
+
+.bp-card__model { font-size: 10px; color: rgba(125, 211, 252, 0.55); margin-top: 2px; }
+
+.bp-plate {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  padding: 4px 8px;
+  border: 1px solid #38bdf8;
+  color: #e0f2fe;
+  flex-shrink: 0;
+}
+
+.bp-badge {
+  display: inline-block;
+  font-size: 8px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  padding: 3px 8px;
+  margin-bottom: 10px;
+  border: 1px solid;
+}
+.bp-badge--parked { border-color: #22d3ee; color: #22d3ee; }
+.bp-badge--out { border-color: #fbbf24; color: #fbbf24; }
+
+.bp-card .t-stat {
+  display: grid;
+  grid-template-columns: 72px 1fr 36px;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 6px;
+  font-size: 9px;
+}
+.bp-card .t-stat__label { color: rgba(125, 211, 252, 0.55); text-transform: uppercase; }
+.bp-card .t-stat__track {
+  height: 4px;
+  background: rgba(56, 189, 248, 0.12);
+  border: 1px solid rgba(56, 189, 248, 0.2);
+}
+.bp-card .t-stat__fill { height: 100%; background: #38bdf8; }
+.bp-card .t-stat__fill--fuel { background: #22d3ee; }
+.bp-card .t-stat__fill--body { background: #67e8f9; }
+.bp-card .t-stat__fill--engine { background: #0ea5e9; }
+.bp-card .t-stat__pct { text-align: right; color: #e0f2fe; font-weight: 600; }
+
+.bp-km {
+  font-size: 9px;
+  color: rgba(125, 211, 252, 0.5);
+  margin: 10px 0;
+  letter-spacing: 0.08em;
+}
+
+.bp-actions { display: flex; gap: 8px; margin-top: 8px; }
+.bp-btn {
+  flex: 1;
+  font-family: inherit;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 10px;
+  border: 1px solid #38bdf8;
+  background: rgba(14, 165, 233, 0.12);
+  color: #e0f2fe;
+  cursor: pointer;
+}
+.bp-btn--ghost { flex: 0; padding: 10px 12px; background: transparent; }
+
+.bp-empty {
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: 48px;
+  border: 1px dashed rgba(56, 189, 248, 0.3);
+  color: rgba(125, 211, 252, 0.5);
+  font-size: 12px;
+}
+
+@media (max-width: 800px) {
+  .bp-grid { grid-template-columns: 1fr; }
+}

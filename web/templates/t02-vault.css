@@ -1,0 +1,241 @@
+/* Vorlage 02 — Vault Ledger */
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Source+Sans+3:wght@400;600;700&display=swap');
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; }
+
+body {
+  min-height: 100vh;
+  font-family: 'Source Sans 3', sans-serif;
+  background: radial-gradient(ellipse at 30% 0%, #2a2418, #0f0e0c 55%);
+  color: #2c2416;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 28px;
+}
+
+.vault {
+  width: min(1100px, 100%);
+  height: min(760px, 90vh);
+  display: flex;
+  flex-direction: column;
+  background: linear-gradient(180deg, #f8f4eb 0%, #ebe4d4 100%);
+  border-radius: 4px;
+  box-shadow:
+    0 0 0 1px rgba(180, 150, 80, 0.35),
+    0 40px 100px rgba(0, 0, 0, 0.55),
+    inset 0 1px 0 rgba(255, 255, 255, 0.8);
+  overflow: hidden;
+}
+
+.vault-header {
+  padding: 28px 32px 20px;
+  border-bottom: 2px solid #c9a84c;
+  background: linear-gradient(180deg, rgba(201, 168, 76, 0.12), transparent);
+}
+
+.vault-brand {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: #8a7340;
+}
+
+.vault-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 28px;
+  font-weight: 700;
+  color: #1a1510;
+  margin-top: 6px;
+}
+
+.vault-sub { font-size: 13px; color: #6b5d45; margin-top: 4px; }
+
+.vault-nav {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 32px;
+  background: rgba(0, 0, 0, 0.03);
+  border-bottom: 1px solid rgba(180, 150, 80, 0.25);
+}
+
+.vault-tabs { display: flex; gap: 4px; }
+.vault-tab {
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  padding: 8px 18px;
+  border: none;
+  border-radius: 2px;
+  background: transparent;
+  color: #6b5d45;
+  cursor: pointer;
+}
+.vault-tab.active {
+  background: #1a1510;
+  color: #e8d5a3;
+}
+
+.vault-search {
+  flex: 1;
+  max-width: 320px;
+  margin-left: auto;
+  font-family: inherit;
+  font-size: 14px;
+  padding: 9px 14px;
+  border: 1px solid rgba(180, 150, 80, 0.45);
+  border-radius: 2px;
+  background: #fffef9;
+  outline: none;
+}
+
+.vault-back {
+  font-size: 12px;
+  font-weight: 600;
+  color: #8a7340;
+  text-decoration: none;
+  white-space: nowrap;
+}
+.vault-back:hover { color: #1a1510; }
+
+.vault-scroll {
+  flex: 1;
+  overflow: auto;
+  padding: 20px 32px 28px;
+}
+
+.vault-list { display: flex; flex-direction: column; gap: 14px; }
+
+.vault-entry {
+  display: grid;
+  grid-template-columns: 72px 1fr auto;
+  gap: 20px;
+  align-items: center;
+  padding: 18px 22px;
+  background: #fffef9;
+  border: 1px solid rgba(180, 150, 80, 0.35);
+  border-left: 4px solid #c9a84c;
+  box-shadow: 0 2px 12px rgba(26, 21, 16, 0.06);
+  animation: vaultIn 0.4s ease backwards;
+  animation-delay: calc(var(--i, 0) * 0.04s);
+}
+
+@keyframes vaultIn {
+  from { opacity: 0; transform: translateX(-8px); }
+  to { opacity: 1; transform: none; }
+}
+
+.vault-seal {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  border: 2px solid #c9a84c;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+  color: #8a7340;
+  background: radial-gradient(circle at 30% 30%, #fffef9, #ebe4d4);
+  position: relative;
+}
+.vault-seal::after {
+  content: 'EC';
+  position: absolute;
+  font-size: 7px;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  bottom: 8px;
+  color: #c9a84c;
+}
+
+.vault-entry__main { min-width: 0; }
+.vault-entry__row {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.vault-entry__name {
+  font-family: 'Playfair Display', serif;
+  font-size: 18px;
+  font-weight: 700;
+  color: #1a1510;
+}
+.vault-entry__plate {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  color: #8a7340;
+}
+.vault-entry__model { font-size: 13px; color: #6b5d45; margin-top: 4px; }
+
+.vault-stamp {
+  display: inline-block;
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  padding: 4px 10px;
+  margin-top: 8px;
+  border-radius: 2px;
+}
+.vault-stamp--parked { background: rgba(34, 120, 70, 0.12); color: #1d6b42; border: 1px solid rgba(34, 120, 70, 0.35); }
+.vault-stamp--out { background: rgba(180, 120, 40, 0.12); color: #8a5a18; border: 1px solid rgba(180, 120, 40, 0.35); }
+
+.vault-entry .t-stat {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 6px;
+  font-size: 11px;
+  color: #6b5d45;
+}
+.vault-entry .t-stat__track {
+  width: 80px;
+  height: 4px;
+  background: rgba(180, 150, 80, 0.2);
+  border-radius: 2px;
+  overflow: hidden;
+}
+.vault-entry .t-stat__fill { height: 100%; background: #c9a84c; border-radius: 2px; }
+.vault-entry .t-stat__pct { font-weight: 700; color: #1a1510; min-width: 32px; }
+
+.vault-side {
+  text-align: right;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 10px;
+}
+.vault-km { font-size: 12px; color: #6b5d45; }
+.vault-km strong { display: block; font-size: 16px; color: #1a1510; font-weight: 700; }
+
+.vault-btn {
+  font-family: inherit;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 10px 20px;
+  border: none;
+  background: #1a1510;
+  color: #e8d5a3;
+  cursor: pointer;
+  border-radius: 2px;
+}
+
+.vault-empty {
+  text-align: center;
+  padding: 60px;
+  font-family: 'Playfair Display', serif;
+  font-size: 18px;
+  color: #8a7340;
+}
+
+@media (max-width: 720px) {
+  .vault-entry { grid-template-columns: 1fr; }
+  .vault-side { align-items: flex-start; text-align: left; }
+}

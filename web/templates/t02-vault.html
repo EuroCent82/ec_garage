@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Vorlage 02 — Vault Ledger</title>
+  <link rel="stylesheet" href="../vendor/fontawesome/css/all.min.css" />
+  <link rel="stylesheet" href="t02-vault.css" />
+</head>
+<body>
+  <div class="vault" id="app">
+    <header class="vault-header">
+      <div class="vault-brand">EuroCity Private Vault</div>
+      <h1 class="vault-title" id="title">Depot Legion Square</h1>
+      <p class="vault-sub" id="sub">Ledger · Landvermögen</p>
+    </header>
+    <nav class="vault-nav">
+      <div class="vault-tabs">
+        <button type="button" class="vault-tab active" data-tab="land">Land</button>
+        <button type="button" class="vault-tab" data-tab="air">Luft</button>
+        <button type="button" class="vault-tab" data-tab="water">Wasser</button>
+      </div>
+      <input type="search" class="vault-search" id="search" placeholder="Eintrag suchen…" />
+      <a class="vault-back" href="index.html">← Vorlagen</a>
+    </nav>
+    <div class="vault-scroll">
+      <div class="vault-list" id="list"></div>
+    </div>
+  </div>
+  <script src="mock.js"></script>
+  <script>
+    const META = {
+      land: { title: 'Depot Legion Square', sub: 'Ledger · Landvermögen' },
+      air: { title: 'Hangar LSIA Nord', sub: 'Ledger · Luftvermögen' },
+      water: { title: 'Marina La Puerta', sub: 'Ledger · Wasservermögen' },
+    };
+    let tab = 'land';
+
+    function renderEntry(v, i) {
+      const stats = EC_TEMPLATE.statBars(v).replace(/t-stat/g, 't-stat');
+      return `
+        <article class="vault-entry" style="--i:${i}">
+          <div class="vault-seal">${EC_TEMPLATE.catIcon(v.category)}</div>
+          <div class="vault-entry__main">
+            <div class="vault-entry__row">
+              <span class="vault-entry__name">${EC_TEMPLATE.displayName(v)}</span>
+              <span class="vault-entry__plate">${v.plate}</span>
+            </div>
+            <div class="vault-entry__model">${v.model}</div>
+            <span class="vault-stamp vault-stamp--${v.status}">${EC_TEMPLATE.statusLabel(v)}</span>
+            <div style="display:flex;flex-wrap:wrap;gap:12px;margin-top:10px">${stats}</div>
+          </div>
+          <div class="vault-side">
+            <div class="vault-km">Kilometerstand<strong>${EC_TEMPLATE.formatKm(v.mileage)}</strong></div>
+            <button type="button" class="vault-btn">${v.status === 'parked' ? 'Freigabe' : 'Verfolgen'}</button>
+          </div>
+        </article>`;
+    }
+
+    function render() {
+      const m = META[tab];
+      document.getElementById('title').textContent = m.title;
+      document.getElementById('sub').textContent = m.sub;
+      const list = EC_TEMPLATE.filter(EC_TEMPLATE_MOCK, { tab, q: document.getElementById('search').value });
+      document.getElementById('list').innerHTML = list.length
+        ? list.map(renderEntry).join('')
+        : '<p class="vault-empty">Kein Eintrag im Ledger.</p>';
+    }
+
+    document.querySelectorAll('.vault-tab').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.vault-tab').forEach((b) => b.classList.remove('active'));
+        btn.classList.add('active');
+        tab = btn.dataset.tab;
+        render();
+      });
+    });
+    document.getElementById('search').addEventListener('input', render);
+    render();
+  </script>
+</body>
+</html>

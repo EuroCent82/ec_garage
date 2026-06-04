@@ -14,10 +14,11 @@
 
 | Feature | Status |
 | --- | --- |
-| Garage-NUI (4 Modi) | ✅ Vorschau |
-| Creator-UI | ✅ Vorschau |
+| Garage-NUI (4 Modi) | ✅ ingame |
+| Creator-UI + DB + Live-Sync | ✅ ingame |
 | SQL-Schema + Würfelpark-Seed | ✅ |
-| Ein-/Ausparken, Framework-Bridge | ⏳ folgt |
+| Fahrzeuge aus ESX `owned_vehicles` | ✅ lesen |
+| Ein-/Ausparken (Spawn/Park) | ⏳ folgt |
 
 **Framework:** ESX · QBCore · Qbox (geplant)
 
@@ -29,7 +30,28 @@ Resource-Name: **`ec_garage`**
 
 1. `ec_garage` in `resources/` legen
 2. `sql/install.sql` und `sql/seed_wuerfelpark.sql` in deiner Server-DB ausführen
-3. `ensure ec_garage` in `server.cfg`
+3. **oxmysql** muss laufen (`ensure oxmysql` vor `ec_garage`)
+4. `ensure ec_garage` in `server.cfg`
+5. Creator-Zugriff in `config.lua` — Standard-Gruppen: **admin**, **manager** (`Config.CreatorGroups`).  
+   Optional zusätzlich in `server.cfg`:
+
+```cfg
+add_ace group.admin ec_garage.creator allow
+```
+
+Zugriff gilt, wenn **Gruppe oder ACE** passt.
+
+## Ingame
+
+| Befehl | Funktion |
+| --- | --- |
+| `/creategarage` | Garagen-Creator (lädt/speichert in `ec_garages`) |
+| `/garageui` | Garage-UI testen (Standard: Würfelpark) |
+| **E / Target** | Garage am Prop/Marker öffnen |
+
+**Speichern im Creator:** schreibt in die DB und synchronisiert sofort alle Spieler (Blips, Props, Target).
+
+Fahrzeuge erscheinen nur, wenn `owned_vehicles.parking` der Garage-ID entspricht (z. B. `wuerfelpark`).
 
 Details: [docs/DATABASE.md](./docs/DATABASE.md) (im Dev-Repo vollständiger)
 

@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Vorlage 01 — Blueprint Archiv</title>
+  <link rel="stylesheet" href="../vendor/fontawesome/css/all.min.css" />
+  <link rel="stylesheet" href="t01-blueprint.css" />
+</head>
+<body>
+  <div class="bp" id="app">
+    <header class="bp-top">
+      <div>
+        <div class="bp-meta">EC Garage · Zeichnungsarchiv · Rev. 01</div>
+        <h1 class="bp-title" id="title">Legion Square — Landfahrzeuge</h1>
+        <div class="bp-scale">Maßstab 1:1 · Raster 24px · Los Santos County</div>
+      </div>
+      <a class="bp-back" href="index.html">← Alle Vorlagen</a>
+    </header>
+    <div class="bp-toolbar">
+      <div class="bp-tabs" role="tablist">
+        <button type="button" class="bp-tab active" data-tab="land">Land</button>
+        <button type="button" class="bp-tab" data-tab="air">Luft</button>
+        <button type="button" class="bp-tab" data-tab="water">Wasser</button>
+      </div>
+      <input type="search" class="bp-search" id="search" placeholder="Referenz / Kennzeichen suchen…" />
+    </div>
+    <div class="bp-scroll">
+      <div class="bp-grid" id="grid"></div>
+    </div>
+  </div>
+  <script src="mock.js"></script>
+  <script>
+    const TITLES = { land: 'Legion Square — Landfahrzeuge', air: 'LSIA — Luftfahrzeuge', water: 'La Puerta — Wasserfahrzeuge' };
+    let tab = 'land';
+    const grid = document.getElementById('grid');
+    const title = document.getElementById('title');
+
+    function renderCard(v, i) {
+      const name = EC_TEMPLATE.displayName(v);
+      return `
+        <article class="bp-card" style="--i:${i}">
+          <span class="bp-card__dim">REF-${String(v.id).padStart(4, '0')}</span>
+          <div class="bp-card__visual">${EC_TEMPLATE.catIcon(v.category)}<span>${(v.modelKey || '').toUpperCase()}</span></div>
+          <div class="bp-card__body">
+            <div class="bp-card__head">
+              <div>
+                <div class="bp-card__name">${name}</div>
+                <div class="bp-card__model">${v.model}</div>
+              </div>
+              <span class="bp-plate">${v.plate}</span>
+            </div>
+            <span class="bp-badge bp-badge--${v.status}">${EC_TEMPLATE.statusLabel(v)}</span>
+            ${EC_TEMPLATE.statBars(v)}
+            <div class="bp-km">Laufleistung: ${EC_TEMPLATE.formatKm(v.mileage)}</div>
+            <div class="bp-actions">
+              <button type="button" class="bp-btn">${v.status === 'parked' ? 'Ausparken' : 'Orten'}</button>
+              <button type="button" class="bp-btn bp-btn--ghost" title="Favorit"><i class="fa-${v.favorite ? 'solid' : 'regular'} fa-star"></i></button>
+            </div>
+          </div>
+        </article>`;
+    }
+
+    function render() {
+      title.textContent = TITLES[tab];
+      const list = EC_TEMPLATE.filter(EC_TEMPLATE_MOCK, { tab, q: document.getElementById('search').value });
+      grid.innerHTML = list.length
+        ? list.map(renderCard).join('')
+        : '<div class="bp-empty">Keine Einträge im Archiv für diese Kategorie.</div>';
+    }
+
+    document.querySelectorAll('.bp-tab').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.bp-tab').forEach((b) => b.classList.remove('active'));
+        btn.classList.add('active');
+        tab = btn.dataset.tab;
+        render();
+      });
+    });
+    document.getElementById('search').addEventListener('input', render);
+    render();
+  </script>
+</body>
+</html>

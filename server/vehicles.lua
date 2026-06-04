@@ -157,3 +157,148 @@ RegisterNetEvent('ec_garage:requestVehicles', function(garageId, garageType)
     local vehicles = ECGarage.Server.FetchVehicles(src, garageId, garageType or 'land')
     TriggerClientEvent('ec_garage:receiveVehicles', src, garageId, vehicles)
 end)
+
+function ECGarage.Server.TakeOutVehicle(source, garageId, plate, slotIndex)
+    if not ECGarage.MySQL.IsReady() then
+        return { ok = false, message = 'Kein MySQL aktiv' }
+    end
+
+    local garage = ECGarage.FindGarageById(garageId)
+    if not garage then
+        return { ok = false, message = 'Garage nicht gefunden' }
+    end
+
+    local slot = garage.spawnSlots and garage.spawnSlots[slotIndex]
+    if not slot then
+        return { ok = false, message = 'Ungültiger Auspark-Slot' }
+    end
+
+    local identifier = ECGarage.Bridge.GetIdentifier(source)
+    if not identifier then
+        return { ok = false, message = 'Spieler nicht gefunden' }
+    end
+
+    if ECGarage.Bridge.Framework ~= 'esx' then
+        return { ok = false, message = 'Ausparken aktuell nur für ESX' }
+    end
+
+    local tableName = Config.VehicleTables.esx or 'owned_vehicles'
+    local parkingCol = Config.EsxParkingColumn or 'parking'
+    local storedCol = Config.EsxStoredColumn or 'stored'
+    local garageKey = normalizeParking(garageId)
+    local plateKey = tostring(plate):gsub('^%s+', ''):gsub('%s+$', '')
+
+    local query = ([[
+        SELECT plate, vehicle, type, %s AS stored, %s AS parking
+        FROM `%s`
+        WHERE owner = ? AND REPLACE(plate, ' ', '') = REPLACE(?, ' ', '')
+        LIMIT 1
+    ]]):format(storedCol, parkingCol, tableName)
+
+    local rows = ECGarage.MySQL.Await(query, { identifier, plateKey })
+    if not rows or not rows[1] then
+        return { ok = false, message = 'Fahrzeug nicht gefunden' }
+    end
+
+    local row = rows[1]
+    if tonumber(row.stored) ~= 1 then
+        return { ok = false, message = 'Fahrzeug ist nicht eingeparkt' }
+    end
+
+    if normalizeParking(row.parking) ~= garageKey then
+        return { ok = false, message = 'Fahrzeug gehört nicht zu dieser Garage' }
+    end
+
+    local props = decodeVehicleProps(row.vehicle)
+    local updateQuery = ([[
+        UPDATE `%s` SET %s = 0 WHERE owner = ? AND REPLACE(plate, ' ', '') = REPLACE(?, ' ', '')
+    ]]):format(tableName, storedCol)
+
+    ECGarage.MySQL.Await(updateQuery, { identifier, plateKey })
+
+    return {
+        ok = true,
+        plate = row.plate,
+        props = props,
+        slot = slot,
+        garageId = tostring(garageId),
+        slotIndex = slotIndex,
+    }
+end
+
+function ECGarage.Server.SaveVehicleMeta(source, data)
+    if not ECGarage.MySQL.IsReady() then
+        return { ok = false, message = 'Kein MySQL aktiv' }
+    end
+
+    if not data or not data.plate then
+        return { ok = false, message = 'Kennzeichen fehlt' }
+    end
+
+    local identifier = ECGarage.Bridge.GetIdentifier(source)
+    if not identifier then
+        return { ok = false, message = 'Spieler nicht gefunden' }
+    end
+
+    if ECGarage.Bridge.Framework ~= 'esx' then
+        return { ok = false, message = 'Speichern aktuell nur für ESX' }
+    end
+
+    local tableName = Config.VehicleTables.esx or 'owned_vehicles'
+    local plateKey = tostring(data.plate):gsub('^%s+', ''):gsub('%s+$', '')
+
+    local ownerRow = ECGarage.MySQL.Await(([[
+        SELECT plate FROM `%s` WHERE owner = ? AND REPLACE(plate, ' ', '') = REPLACE(?, ' ', '') LIMIT 1
+    ]]):format(tableName), { identifier, plateKey })
+
+    if not ownerRow or not ownerRow[1] then
+        return { ok = false, message = 'Fahrzeug gehört dir nicht' }
+    end
+
+    local plateDb = ownerRow[1].plate
+    local customName = data.customName
+    if customName == '' or customName == nil then
+        customName = nil
+    else
+        customName = tostring(customName):sub(1, 64)
+    end
+
+    local note = data.note and tostring(data.note):sub(1, 200) or ''
+    local favorite = data.favorite and 1 or 0
+
+    ECGarage.MySQL.Await([[
+        INSERT INTO `ec_garage_vehicle_meta` (`plate`, `custom_name`, `note`, `favorite`)
+        VALUES (?, ?, ?, ?)
+        ON DUPLICATE KEY UPDATE
+            `custom_name` = VALUES(`custom_name`),
+            `note` = VALUES(`note`),
+            `favorite` = VALUES(`favorite`),
+            `updated_at` = CURRENT_TIMESTAMP
+    ]], { plateDb, customName, note, favorite })
+
+    return {
+        ok = true,
+        plate = plateDb,
+        customName = customName,
+        note = note,
+        favorite = favorite == 1,
+    }
+end
+
+RegisterNetEvent('ec_garage:saveVehicleMeta', function(data)
+    local src = source
+    local result = ECGarage.Server.SaveVehicleMeta(src, data)
+    TriggerClientEvent('ec_garage:saveVehicleMetaResult', src, result)
+end)
+
+RegisterNetEvent('ec_garage:takeOutVehicle', function(garageId, plate, slotIndex)
+    local src = source
+    slotIndex = tonumber(slotIndex)
+    if not slotIndex then
+        TriggerClientEvent('ec_garage:takeOutResult', src, { ok = false, message = 'Slot fehlt' })
+        return
+    end
+
+    local result = ECGarage.Server.TakeOutVehicle(src, garageId, plate, slotIndex)
+    TriggerClientEvent('ec_garage:takeOutResult', src, result)
+end)

@@ -1,8 +1,58 @@
 --- Garagen-Daten für Client + NUI (GarageSeed / später DB)
 
+function ECGarage.FindConfigTemplate(id)
+    local key = id ~= nil and tostring(id) or ''
+    for _, g in ipairs(GarageConfigTemplate or {}) do
+        if tostring(g.id) == key then
+            return g
+        end
+    end
+    return nil
+end
+
+local function copyProp(prop)
+    if not prop or not prop.model then
+        return nil
+    end
+    return {
+        enabled = prop.enabled ~= false,
+        model = prop.model,
+        x = prop.x,
+        y = prop.y,
+        z = prop.z,
+        h = prop.h or 0.0,
+    }
+end
+
+function ECGarage.MergeGarageFromTemplate(entry)
+    if Config.MergeGarageTemplate == false or not entry then
+        return entry
+    end
+
+    local cfg = ECGarage.FindConfigTemplate(entry.id)
+    if not cfg then
+        return entry
+    end
+
+    if (not entry.prop or not entry.prop.model) and cfg.prop and cfg.prop.model then
+        entry.prop = copyProp(cfg.prop)
+    end
+
+    if not entry.interact and cfg.interact then
+        entry.interact = cfg.interact
+    end
+
+    if not entry.spawnSlots or #entry.spawnSlots == 0 then
+        entry.spawnSlots = cfg.spawnSlots or {}
+    end
+
+    return entry
+end
+
 function ECGarage.FindGarageById(id)
+    local key = id ~= nil and tostring(id) or ''
     for _, garage in ipairs(GarageSeed or {}) do
-        if garage.id == id then
+        if tostring(garage.id) == key then
             return garage
         end
     end
@@ -12,7 +62,7 @@ end
 function ECGarage.GarageToNui(g)
     local prop = g.prop
     local propNui = nil
-    if prop and prop.enabled and prop.model then
+    if prop and prop.model and prop.enabled ~= false then
         propNui = {
             enabled = true,
             model = prop.model,
@@ -51,12 +101,20 @@ function ECGarage.GetGaragesForNui()
 end
 
 function ECGarage.FindGarageIndex(id)
+    local key = id ~= nil and tostring(id) or ''
     for i, g in ipairs(GarageSeed or {}) do
-        if g.id == id then
+        if tostring(g.id) == key then
             return i
         end
     end
     return nil
+end
+
+function ECGarage.SyncGarageSeedFromNui(list)
+    GarageSeed = {}
+    for _, data in ipairs(list or {}) do
+        ECGarage.ApplyGarageFromNui(data)
+    end
 end
 
 function ECGarage.ApplyGarageFromNui(data)
@@ -65,7 +123,7 @@ function ECGarage.ApplyGarageFromNui(data)
     end
 
     local entry = {
-        id = data.id,
+        id = tostring(data.id),
         name = data.name,
         type = data.type or 'land',
         interact = data.interact,
@@ -92,6 +150,8 @@ function ECGarage.ApplyGarageFromNui(data)
             h = data.prop.h or 0.0,
         }
     end
+
+    entry = ECGarage.MergeGarageFromTemplate(entry)
 
     local idx = ECGarage.FindGarageIndex(data.id)
     if idx then

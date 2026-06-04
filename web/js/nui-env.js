@@ -4,7 +4,8 @@
 (function () {
   const isGame = typeof GetParentResourceName === 'function';
   const isEmbed = window.parent !== window;
-  window.EC_NUI = { isGame, isEmbed };
+  const isBrowserPreview = isEmbed && !isGame;
+  window.EC_NUI = { isGame, isEmbed, isBrowserPreview };
 
   if (isGame || isEmbed) {
     document.documentElement.classList.add('nui-embed');

@@ -21,6 +21,7 @@ files {
     'web/index.html',
     'web/creator.html',
     'web/preview.html',
+    'web/css/ec-chat-theme.css',
     'web/css/style.css',
     'web/css/creator.css',
     'web/css/icons.css',
@@ -38,17 +39,22 @@ files {
 }
 
 client_scripts {
+    'client/permissions.lua',
     'client/ui.lua',
     'client/commands.lua',
+    'client/garage_admin.lua',
     'client/target.lua',
     'client/world.lua',
     'client/garage.lua',
+    'client/spawn.lua',
+    'client/debug_slots.lua',
     'client/creator_bridge.lua',
 }
 
 server_scripts {
     'server/mysql.lua',
     'server/bridge.lua',
+    'server/garages.lua',
     'server/vehicles.lua',
     'server/db_check.lua',
 }

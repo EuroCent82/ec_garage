@@ -60,9 +60,27 @@ function showCreator(payload) {
   loadFrame(creatorFrame, 'creator.html', payload, 'openCreator');
 }
 
+function forwardToCreator(data) {
+  if (creatorFrame.dataset.ready !== '1') return;
+  creatorFrame.contentWindow.postMessage(data, '*');
+}
+
 window.addEventListener('message', (event) => {
   const data = event.data;
   if (!data?.action) return;
+
+  if (data.action === 'placementSync' || data.action === 'garagesSynced') {
+    forwardToCreator(data);
+    return;
+  }
+
+  if (
+    (data.action === 'takeOutResult' || data.action === 'saveVehicleMetaResult')
+    && garageFrame.dataset.ready === '1'
+  ) {
+    garageFrame.contentWindow.postMessage(data, '*');
+    return;
+  }
 
   switch (data.action) {
     case 'open':

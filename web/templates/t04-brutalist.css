@@ -1,0 +1,239 @@
+/* Vorlage 04 — Brutalist Yard */
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Archivo:wght@400;700;900&display=swap');
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; }
+
+body {
+  min-height: 100vh;
+  font-family: Archivo, sans-serif;
+  background: #111;
+  color: #111;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+}
+
+.yard {
+  width: min(1140px, 100%);
+  height: min(820px, 94vh);
+  display: flex;
+  flex-direction: column;
+  background: #e8e8e8;
+  border: 6px solid #111;
+  box-shadow: 12px 12px 0 #dc2626;
+}
+
+.yard-head {
+  display: flex;
+  align-items: stretch;
+  border-bottom: 6px solid #111;
+  background: #fff;
+}
+
+.yard-head__block {
+  flex: 1;
+  padding: 20px 24px;
+  border-right: 4px solid #111;
+}
+.yard-head__block:last-child { border-right: none; flex: 0 0 auto; display: flex; align-items: center; }
+
+.yard-label {
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+}
+
+.yard-title {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: clamp(36px, 6vw, 56px);
+  line-height: 0.95;
+  letter-spacing: 0.02em;
+  margin-top: 4px;
+}
+
+.yard-back {
+  font-size: 12px;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: #111;
+  text-decoration: none;
+  padding: 12px 20px;
+  border: 4px solid #111;
+  background: #fef08a;
+}
+.yard-back:hover { background: #dc2626; color: #fff; }
+
+.yard-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0;
+  border-bottom: 4px solid #111;
+  background: #d4d4d4;
+}
+
+.yard-tab {
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 14px 24px;
+  border: none;
+  border-right: 4px solid #111;
+  background: transparent;
+  cursor: pointer;
+  color: #111;
+}
+.yard-tab.active { background: #111; color: #fff; }
+
+.yard-search-wrap { flex: 1; display: flex; min-width: 200px; }
+.yard-search {
+  flex: 1;
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 700;
+  padding: 14px 18px;
+  border: none;
+  border-left: 4px solid #111;
+  background: #fff;
+  outline: none;
+  text-transform: uppercase;
+}
+
+.yard-scroll {
+  flex: 1;
+  overflow: auto;
+  padding: 0;
+}
+
+.yard-manifest { list-style: none; }
+
+.yard-row {
+  display: grid;
+  grid-template-columns: 1fr 140px 100px 120px;
+  align-items: center;
+  gap: 0;
+  border-bottom: 4px solid #111;
+  background: #fff;
+  animation: yardIn 0.35s ease backwards;
+  animation-delay: calc(var(--i, 0) * 0.03s);
+}
+
+@keyframes yardIn {
+  from { opacity: 0; transform: translateX(-20px); }
+  to { opacity: 1; transform: none; }
+}
+
+.yard-row:nth-child(even) { background: #f5f5f5; }
+.yard-row:hover { background: #fef08a; }
+
+.yard-row__main {
+  padding: 18px 22px;
+  border-right: 4px solid #111;
+  min-width: 0;
+}
+
+.yard-row__plate {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 42px;
+  line-height: 1;
+  letter-spacing: 0.04em;
+}
+
+.yard-row__name {
+  font-size: 14px;
+  font-weight: 900;
+  text-transform: uppercase;
+  margin-top: 4px;
+}
+
+.yard-row__model {
+  font-size: 12px;
+  font-weight: 700;
+  color: #525252;
+  margin-top: 2px;
+}
+
+.yard-row__stats {
+  padding: 18px 16px;
+  border-right: 4px solid #111;
+  font-size: 11px;
+  font-weight: 900;
+  text-transform: uppercase;
+  line-height: 1.6;
+}
+
+.yard-row__stats span { display: block; }
+.yard-bar-mini {
+  display: inline-block;
+  width: 48px;
+  height: 6px;
+  background: #d4d4d4;
+  border: 2px solid #111;
+  vertical-align: middle;
+  margin-left: 6px;
+}
+.yard-bar-mini i {
+  display: block;
+  height: 100%;
+  background: #dc2626;
+}
+
+.yard-row__km {
+  padding: 18px 16px;
+  border-right: 4px solid #111;
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 28px;
+  text-align: center;
+}
+
+.yard-row__action {
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.yard-btn {
+  font-family: inherit;
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 12px 8px;
+  border: 4px solid #111;
+  background: #111;
+  color: #fff;
+  cursor: pointer;
+}
+.yard-btn--out { background: #dc2626; }
+
+.yard-tag {
+  display: inline-block;
+  font-size: 10px;
+  font-weight: 900;
+  padding: 4px 8px;
+  margin-top: 6px;
+  border: 3px solid #111;
+  text-transform: uppercase;
+}
+.yard-tag--parked { background: #86efac; }
+.yard-tag--out { background: #fca5a5; }
+
+.yard-empty {
+  padding: 48px;
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 32px;
+  text-align: center;
+  background: #fff;
+}
+
+@media (max-width: 800px) {
+  .yard-row {
+    grid-template-columns: 1fr;
+  }
+  .yard-row > * { border-right: none !important; border-bottom: 4px solid #111; }
+}

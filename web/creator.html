@@ -1,259 +1,126 @@
 <!DOCTYPE html>
-
 <html lang="de">
-
 <head>
-
   <meta charset="UTF-8" />
-  <script>(function(){var g=typeof GetParentResourceName==='function',e=window.parent!==window;if(g||e){document.documentElement.className='nui-embed';}})();</script>
-  <style>html.nui-embed,html.nui-embed body{background:transparent!important}html.nui-embed body::before{display:none!important}</style>
-
+  <script src="js/nui-env.js"></script>
+  <style>html.nui-embed,html.nui-embed body{background:transparent!important}</style>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
   <title>EC Garage – Creator</title>
-
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
-
   <link rel="stylesheet" href="vendor/fontawesome/css/all.min.css" />
-
   <link rel="stylesheet" href="css/icons.css" />
-
+  <link rel="stylesheet" href="css/ec-chat-theme.css" />
   <link rel="stylesheet" href="css/creator.css" />
   <link rel="stylesheet" href="css/nui.css" />
-  <script src="js/nui-env.js"></script>
-
 </head>
-
 <body>
-
   <div id="creator" class="creator hidden">
-
     <div class="creator-backdrop"></div>
 
-
-
     <div class="creator-shell">
-
       <aside class="creator-sidebar">
-
-        <div class="sidebar-head">
-
-          <div class="sidebar-logo"></div>
-
+        <div class="creator-brand">
+          <div class="creator-brand__icon" aria-hidden="true">EC</div>
           <div>
-
-            <h1>Garagen Creator</h1>
-
-            <p>Ingame Editor</p>
-
+            <div class="creator-brand__title">Garagen-Creator</div>
+            <div class="creator-brand__sub">Setup-Assistent</div>
           </div>
-
         </div>
 
-
+        <div class="creator-progress">
+          <div class="creator-progress__label" id="step-progress-label">Schritt 1 / 6</div>
+          <div class="creator-progress__track">
+            <div class="creator-progress__fill" id="step-progress-fill"></div>
+          </div>
+        </div>
 
         <nav class="step-nav" id="step-nav"></nav>
 
-
-
         <div class="sidebar-garages">
-
-          <div class="sidebar-section-title">
-
+          <div class="sidebar-garages__head">
             <span>Garagen</span>
-
-            <button class="btn-mini" id="btn-new-garage" title="Neue Garage"></button>
-
+            <button type="button" class="btn-mini" id="btn-new-garage" title="Neue Garage"></button>
           </div>
-
           <div class="garage-list" id="garage-list"></div>
-
         </div>
 
-
-
-        <div class="sidebar-foot">
-
-          <a class="link-back" href="index.html">← Garage UI</a>
-
-        </div>
-
+        <a class="link-back" href="preview.html">← Zurück zur Preview</a>
       </aside>
 
-
-
-      <main class="creator-main">
-
+      <div class="creator-main">
         <header class="creator-header">
-
           <div>
-
+            <span class="creator-eyebrow">EC Garage</span>
             <h2 id="step-title">Grunddaten</h2>
-
-            <p id="step-desc">Name und Fahrzeugtyp der Garage festlegen</p>
-
+            <p class="creator-step-desc" id="step-desc">Name und Fahrzeugtyp der Garage festlegen</p>
           </div>
-
           <div class="header-actions">
-
-            <button class="btn btn-ghost" id="btn-export"></button>
-
-            <button class="btn btn-success" id="btn-save"></button>
-
-            <button class="btn-close" id="btn-close" aria-label="Schließen"></button>
-
+            <button type="button" class="btn btn-ghost" id="btn-export"></button>
+            <button type="button" class="btn btn-creator" id="btn-save"></button>
+            <button type="button" class="btn btn-close" id="btn-close" aria-label="Schließen"></button>
           </div>
-
         </header>
 
-
+        <div class="creator-tip">
+          <span class="creator-tip__tag">Tipp</span>
+          <span>Pfeiltasten bewegen · Q/E drehen · Enter speichern · Esc abbrechen</span>
+        </div>
 
         <div class="creator-body" id="creator-body"></div>
-
-      </main>
-
+      </div>
     </div>
-
-
 
     <div class="placement-hud hidden" id="placement-hud">
-
       <div class="placement-top">
-
-        <span class="placement-badge" id="placement-badge">Auspark-Slot #1</span>
-
+        <span class="placement-badge" id="placement-badge">Position</span>
         <span class="placement-hint">Hologramm positionieren</span>
-
       </div>
-
-
-
       <div class="placement-viewport">
-
         <div class="viewport-grid"></div>
-
         <div class="viewport-crosshair"></div>
-
         <div class="hologram-vehicle" id="hologram">
-
           <div class="hologram-glow"></div>
-
-          <div class="hologram-icon" id="hologram-icon-default"></div>
-
+          <div class="hologram-icon" id="hologram-icon"></div>
           <div class="hologram-heading" id="hologram-heading">0°</div>
-
         </div>
-
-        <div class="viewport-compass">N</div>
-
       </div>
-
-
-
       <div class="placement-coords">
-
         <div class="coord-item"><span>X</span><strong id="coord-x">0.00</strong></div>
-
         <div class="coord-item"><span>Y</span><strong id="coord-y">0.00</strong></div>
-
         <div class="coord-item"><span>Z</span><strong id="coord-z">0.00</strong></div>
-
         <div class="coord-item coord-item--heading"><span>H</span><strong id="coord-h">0.0°</strong></div>
-
       </div>
-
-
-
       <div class="placement-controls">
-
         <div class="control-group">
-
           <span class="control-label">Bewegen</span>
-
           <div class="key-row">
-
-            <kbd class="key wide"></kbd>
-
-            <kbd class="key">↑</kbd>
-
-            <kbd class="key wide"></kbd>
-
-            <kbd class="key">←</kbd>
-
-            <kbd class="key">↓</kbd>
-
-            <kbd class="key">→</kbd>
-
+            <kbd class="key wide"></kbd><kbd class="key">↑</kbd><kbd class="key wide"></kbd>
+            <kbd class="key">←</kbd><kbd class="key">↓</kbd><kbd class="key">→</kbd>
           </div>
-
         </div>
-
         <div class="control-group">
-
           <span class="control-label">Drehen</span>
-
           <div class="key-row">
-
-            <kbd class="key">Q</kbd>
-
-            <span class="key-sep">↺ ↻</span>
-
-            <kbd class="key">E</kbd>
-
+            <kbd class="key">Q</kbd><span class="key-sep">↺ ↻</span><kbd class="key">E</kbd>
           </div>
-
         </div>
-
         <div class="control-group">
-
           <span class="control-label">Aktion</span>
-
           <div class="key-row">
-
-            <kbd class="key key--ok">Enter</kbd>
-
-            <span class="key-label">Speichern</span>
-
-            <kbd class="key key--cancel">Esc</kbd>
-
-            <span class="key-label">Abbrechen</span>
-
+            <kbd class="key key--ok">Enter</kbd><span class="key-label">Speichern</span>
+            <kbd class="key key--cancel">Esc</kbd><span class="key-label">Abbrechen</span>
           </div>
-
         </div>
-
       </div>
-
-
-
       <div class="placement-actions">
-
-        <button class="btn btn-ghost" id="placement-cancel">Abbrechen</button>
-
-        <button class="btn btn-success" id="placement-confirm"></button>
-
+        <button type="button" class="btn btn-ghost" id="placement-cancel">Abbrechen</button>
+        <button type="button" class="btn btn-creator" id="placement-confirm"></button>
       </div>
-
     </div>
 
-
-
     <div class="toast hidden" id="toast"><span id="toast-message"></span></div>
-
   </div>
 
-
-
   <script src="js/icons.js"></script>
-
   <script src="js/creator.js"></script>
-
 </body>
-
 </html>
-
-

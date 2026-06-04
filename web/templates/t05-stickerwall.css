@@ -1,0 +1,219 @@
+/* Vorlage 05 — Sticker Wall / Zine */
+@import url('https://fonts.googleapis.com/css2?family=Permanent+Marker&family=DM+Sans:wght@500;600;700&display=swap');
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; }
+
+body {
+  min-height: 100vh;
+  font-family: 'DM Sans', sans-serif;
+  background:
+    radial-gradient(circle at 80% 20%, rgba(236, 72, 153, 0.2), transparent 40%),
+    radial-gradient(circle at 10% 80%, rgba(249, 115, 22, 0.15), transparent 40%),
+    #1a1028;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+
+.wall-wrap {
+  width: min(1180px, 100%);
+  height: min(820px, 92vh);
+  display: flex;
+  flex-direction: column;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.5);
+}
+
+.wall-top {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 14px;
+  padding: 18px 22px;
+  background: rgba(0, 0, 0, 0.35);
+  border-bottom: 3px solid #f472b6;
+}
+
+.wall-title {
+  font-family: 'Permanent Marker', cursive;
+  font-size: 28px;
+  color: #fde68a;
+  text-shadow: 2px 2px 0 #ec4899;
+  flex: 1;
+  min-width: 200px;
+}
+
+.wall-tabs { display: flex; gap: 8px; flex-wrap: wrap; }
+.wall-tab {
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 8px 16px;
+  border: 2px solid #fff;
+  border-radius: 999px;
+  background: transparent;
+  color: #fff;
+  cursor: pointer;
+  transform: rotate(-2deg);
+}
+.wall-tab.active {
+  background: #f472b6;
+  border-color: #f472b6;
+  transform: rotate(1deg);
+}
+
+.wall-search {
+  font-family: inherit;
+  font-size: 13px;
+  padding: 10px 16px;
+  border: 2px dashed #fde68a;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.06);
+  color: #fff;
+  min-width: 200px;
+  outline: none;
+}
+.wall-search::placeholder { color: rgba(255, 255, 255, 0.45); }
+
+.wall-back {
+  font-size: 12px;
+  font-weight: 700;
+  color: #fde68a;
+  text-decoration: none;
+}
+.wall-back:hover { text-decoration: underline; }
+
+.wall-scroll {
+  flex: 1;
+  overflow: auto;
+  padding: 28px 24px 32px;
+  background:
+    url("data:image/svg+xml,%3Csvg width='40' height='40' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='2' cy='2' r='1' fill='%23ffffff08'/%3E%3C/svg%3E");
+}
+
+.wall-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 28px;
+  align-items: start;
+}
+
+.polaroid {
+  position: relative;
+  background: #faf8f5;
+  color: #1a1028;
+  padding: 12px 12px 48px;
+  box-shadow: 4px 6px 20px rgba(0, 0, 0, 0.4);
+  transform: rotate(var(--rot, -2deg));
+  animation: polIn 0.5s ease backwards;
+  animation-delay: calc(var(--i, 0) * 0.06s);
+}
+
+@keyframes polIn {
+  from { opacity: 0; transform: rotate(var(--rot, -2deg)) scale(0.9) translateY(20px); }
+  to { opacity: 1; transform: rotate(var(--rot, -2deg)) scale(1); }
+}
+
+.polaroid:hover {
+  transform: rotate(0deg) scale(1.03);
+  z-index: 2;
+}
+
+.polaroid__tape {
+  position: absolute;
+  width: 56px;
+  height: 22px;
+  background: rgba(253, 230, 138, 0.75);
+  top: -10px;
+  left: 50%;
+  transform: translateX(-50%) rotate(-4deg);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+.polaroid__photo {
+  aspect-ratio: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: 48px;
+  color: #7c3aed;
+  background: linear-gradient(145deg, #ede9fe, #ddd6fe);
+  margin-bottom: 10px;
+}
+
+.polaroid__photo span {
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 0.15em;
+  color: #6b21a8;
+  margin-top: 6px;
+}
+
+.polaroid__caption {
+  font-family: 'Permanent Marker', cursive;
+  font-size: 16px;
+  line-height: 1.2;
+  color: #1a1028;
+}
+
+.polaroid__plate {
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  margin-top: 6px;
+  color: #6b21a8;
+}
+
+.polaroid__stickers {
+  position: absolute;
+  bottom: 10px;
+  left: 12px;
+  right: 12px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.sticker {
+  font-size: 9px;
+  font-weight: 800;
+  text-transform: uppercase;
+  padding: 4px 8px;
+  border-radius: 4px;
+  transform: rotate(var(--sr, 3deg));
+}
+.sticker--parked { background: #86efac; color: #14532d; }
+.sticker--out { background: #fca5a5; color: #7f1d1d; }
+.sticker--fuel { background: #93c5fd; color: #1e3a8a; }
+.sticker--fav { background: #fde68a; color: #92400e; }
+
+.polaroid__actions {
+  position: absolute;
+  bottom: 48px;
+  right: 12px;
+}
+
+.polaroid__btn {
+  font-family: inherit;
+  font-size: 10px;
+  font-weight: 800;
+  padding: 8px 12px;
+  border: 2px solid #1a1028;
+  background: #f472b6;
+  color: #fff;
+  cursor: pointer;
+  transform: rotate(4deg);
+}
+
+.wall-empty {
+  grid-column: 1 / -1;
+  font-family: 'Permanent Marker', cursive;
+  font-size: 24px;
+  color: rgba(255, 255, 255, 0.4);
+  text-align: center;
+  padding: 60px;
+}

@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Vorlage 04 — Brutalist Yard</title>
+  <link rel="stylesheet" href="../vendor/fontawesome/css/all.min.css" />
+  <link rel="stylesheet" href="t04-brutalist.css" />
+</head>
+<body>
+  <div class="yard" id="app">
+    <header class="yard-head">
+      <div class="yard-head__block">
+        <div class="yard-label">Parkplatz-Manifest</div>
+        <h1 class="yard-title" id="title">LEGION YARD</h1>
+      </div>
+      <div class="yard-head__block">
+        <a class="yard-back" href="index.html">Zurück</a>
+      </div>
+    </header>
+    <div class="yard-bar">
+      <button type="button" class="yard-tab active" data-tab="land">Land</button>
+      <button type="button" class="yard-tab" data-tab="air">Luft</button>
+      <button type="button" class="yard-tab" data-tab="water">Wasser</button>
+      <div class="yard-search-wrap">
+        <input type="search" class="yard-search" id="search" placeholder="Suche Kennzeichen / Name" />
+      </div>
+    </div>
+    <div class="yard-scroll">
+      <ul class="yard-manifest" id="list"></ul>
+    </div>
+  </div>
+  <script src="mock.js"></script>
+  <script>
+    const TITLES = { land: 'LEGION YARD', air: 'LSIA YARD', water: 'MARINA YARD' };
+    let tab = 'land';
+
+    function bar(val) {
+      return `<span class="yard-bar-mini"><i style="width:${val}%"></i></span>`;
+    }
+
+    function renderRow(v, i) {
+      return `
+        <li class="yard-row" style="--i:${i}">
+          <div class="yard-row__main">
+            <div class="yard-row__plate">${v.plate}</div>
+            <div class="yard-row__name">${EC_TEMPLATE.displayName(v)}</div>
+            <div class="yard-row__model">${v.model}</div>
+            <span class="yard-tag yard-tag--${v.status}">${EC_TEMPLATE.statusLabel(v)}</span>
+          </div>
+          <div class="yard-row__stats">
+            <span>Tank ${v.fuel}% ${bar(v.fuel)}</span>
+            <span>Body ${v.body}% ${bar(v.body)}</span>
+            <span>Motor ${v.engine}% ${bar(v.engine)}</span>
+          </div>
+          <div class="yard-row__km">${Math.round(v.mileage / 1000)}k</div>
+          <div class="yard-row__action">
+            <button type="button" class="yard-btn ${v.status === 'out' ? 'yard-btn--out' : ''}">${v.status === 'parked' ? 'RAUS' : 'ORT'}</button>
+          </div>
+        </li>`;
+    }
+
+    function render() {
+      document.getElementById('title').textContent = TITLES[tab];
+      const list = EC_TEMPLATE.filter(EC_TEMPLATE_MOCK, { tab, q: document.getElementById('search').value });
+      document.getElementById('list').innerHTML = list.length
+        ? list.map(renderRow).join('')
+        : '<li class="yard-empty">LEER — KEIN FAHRZEUG</li>';
+    }
+
+    document.querySelectorAll('.yard-tab').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.yard-tab').forEach((b) => b.classList.remove('active'));
+        btn.classList.add('active');
+        tab = btn.dataset.tab;
+        render();
+      });
+    });
+    document.getElementById('search').addEventListener('input', render);
+    render();
+  </script>
+</body>
+</html>
