@@ -25,7 +25,10 @@ function hideAll() {
 
 function loadFrame(frame, src, payload, messageAction) {
   const send = () => {
-    frame.contentWindow.postMessage({ action: messageAction, ...payload }, '*');
+    const data = { ...(payload || {}) };
+    delete data.action;
+    data.action = messageAction;
+    frame.contentWindow.postMessage(data, '*');
   };
 
   if (frame.dataset.ready === '1') {
@@ -37,7 +40,9 @@ function loadFrame(frame, src, payload, messageAction) {
   frame.onload = () => {
     frame.dataset.ready = '1';
     frame.onload = null;
-    send();
+    requestAnimationFrame(() => {
+      requestAnimationFrame(send);
+    });
   };
 }
 

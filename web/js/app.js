@@ -554,7 +554,7 @@ function init() {
 
   window.addEventListener('message', (event) => {
     const data = event.data;
-    if (data?.action === 'open') {
+    if (data?.action === 'open' || data?.action === 'openGarage') {
       if (data.vehicles) state.vehicles = data.vehicles;
       openGarage(data.mode || 'land', data.garageName);
     }
