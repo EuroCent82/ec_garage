@@ -1,0 +1,6 @@
+--- Startet mit Resource: erinnert an ec_garage-Tabellen (oxmysql-Anbindung folgt)
+CreateThread(function()
+    Wait(2000)
+    print('^3[ec_garage]^7 SQL: sql/install.sql + sql/seed_wuerfelpark.sql in deiner ESX-DB ausführen.')
+    print('^3[ec_garage]^7 Doku: docs/DATABASE.md')
+end)

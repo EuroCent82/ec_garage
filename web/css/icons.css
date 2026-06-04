@@ -1,0 +1,118 @@
+/* Font Awesome icon sizing – EC Garage */
+
+.icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+  pointer-events: none;
+}
+
+.brand-icon .icon,
+.brand-icon i { font-size: 22px; color: #fff; }
+
+.btn-close .icon,
+.btn-close i { font-size: 16px; }
+
+.tab .icon,
+.tab i { font-size: 14px; flex-shrink: 0; }
+
+.search-box .icon,
+.search-box i { font-size: 14px; color: var(--text-muted); flex-shrink: 0; }
+
+.filter-btn .icon,
+.filter-btn i { font-size: 14px; }
+
+.impound-info-banner .icon,
+.impound-info-banner i { font-size: 18px; color: var(--warning); flex-shrink: 0; }
+
+.btn .icon,
+.btn i { font-size: 13px; }
+
+.btn-icon-only .icon,
+.btn-icon-only i { font-size: 14px; }
+
+.btn-favorite .icon,
+.btn-favorite i { font-size: 15px; color: var(--text-muted); transition: var(--transition); }
+
+.btn-favorite:hover i { color: var(--warning); }
+.btn-favorite.active i { color: var(--warning); }
+
+.stat-row > .icon,
+.stat-row > i.stat-icon { font-size: 14px; width: 16px; flex-shrink: 0; text-align: center; }
+
+.stat-icon--fuel { color: var(--fuel); }
+.stat-icon--body { color: var(--body); }
+.stat-icon--engine { color: var(--engine); }
+
+.card-mileage .icon,
+.card-mileage i { font-size: 14px; color: var(--text-muted); }
+
+.card-impound-location .icon,
+.card-impound-location i { font-size: 20px; color: var(--warning); flex-shrink: 0; }
+
+.empty-icon .icon,
+.empty-icon i { font-size: 36px; color: var(--text-muted); opacity: 0.45; }
+
+.card-image-fa {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  background: linear-gradient(180deg, rgba(59, 130, 246, 0.1) 0%, #0a0c10 100%);
+}
+
+.card-image-fa--land { background: linear-gradient(180deg, rgba(59, 130, 246, 0.12) 0%, #0a0c10 100%); }
+.card-image-fa--air { background: linear-gradient(180deg, rgba(167, 139, 250, 0.12) 0%, #0a0c10 100%); }
+.card-image-fa--water { background: linear-gradient(180deg, rgba(6, 182, 212, 0.12) 0%, #0a0c10 100%); }
+
+.card-image-fa .icon--vehicle {
+  font-size: 56px;
+  opacity: 0.55;
+  filter: drop-shadow(0 0 20px rgba(255, 255, 255, 0.08));
+}
+
+.card-image-fa--land .icon--vehicle { color: #3b82f6; }
+.card-image-fa--air .icon--vehicle { color: #a78bfa; }
+.card-image-fa--water .icon--vehicle { color: #06b6d4; }
+
+.card-image-fa__brand {
+  position: absolute;
+  top: 12px;
+  left: 14px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  color: var(--text-secondary);
+}
+
+.card-image-fa__model {
+  position: absolute;
+  bottom: 10px;
+  left: 14px;
+  font-size: 10px;
+  font-weight: 500;
+  color: var(--text-muted);
+  letter-spacing: 0.06em;
+}
+
+.sidebar-logo .icon,
+.sidebar-logo i { font-size: 20px; color: #fff; }
+
+.garage-item-icon .icon,
+.garage-item-icon i { font-size: 14px; }
+
+.type-option .icon,
+.type-option i { font-size: 28px; }
+
+.pos-empty .icon,
+.pos-empty i { font-size: 40px; opacity: 0.35; margin-bottom: 10px; display: block; }
+
+.btn-icon .icon,
+.btn-icon i { font-size: 14px; }
+
+.hologram-icon .icon,
+.hologram-icon i { font-size: 72px; color: var(--creator); opacity: 0.85; filter: drop-shadow(0 0 12px var(--creator-glow)); }
