@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 280" role="img" aria-label="ec_garage banner">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#070707"/>
+      <stop offset="45%" stop-color="#0d1117"/>
+      <stop offset="100%" stop-color="#161b22"/>
+    </linearGradient>
+    <linearGradient id="accent" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#43a047"/>
+      <stop offset="45%" stop-color="#2e7d32"/>
+      <stop offset="100%" stop-color="#d8a15c"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="16%" cy="42%" r="58%">
+      <stop offset="0%" stop-color="#43a047" stop-opacity="0.28"/>
+      <stop offset="100%" stop-color="#43a047" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="ticket" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#21262d"/>
+      <stop offset="100%" stop-color="#161b22"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="280" fill="url(#bg)"/>
+  <rect width="1200" height="280" fill="url(#glow)"/>
+  <rect x="0" y="276" width="1200" height="4" fill="url(#accent)"/>
+  <circle cx="148" cy="140" r="74" fill="none" stroke="url(#accent)" stroke-width="3" opacity="0.85"/>
+  <g transform="translate(88, 72)">
+    <rect x="24" y="8" width="88" height="112" rx="10" fill="url(#ticket)" stroke="#43a047" stroke-width="2"/>
+    <rect x="32" y="20" width="72" height="10" rx="2" fill="#30363d"/>
+    <rect x="32" y="38" width="52" height="6" rx="2" fill="#484f58"/>
+    <rect x="32" y="52" width="64" height="6" rx="2" fill="#484f58"/>
+    <text x="64" y="92" text-anchor="middle" font-family="Segoe UI, system-ui, sans-serif" font-size="28" font-weight="800" fill="#43a047">P</text>
+    <g transform="translate(18, 98)">
+      <path d="M8 42 L52 42 L60 28 L76 28 L84 42 L92 42 L92 58 L8 58 Z" fill="#1e293b" stroke="#43a047" stroke-width="2" stroke-linejoin="round"/>
+      <rect x="20" y="32" width="22" height="14" rx="2" fill="#0d1117" stroke="#58a6ff" stroke-width="1.2" opacity="0.9"/>
+      <circle cx="26" cy="58" r="7" fill="#010409" stroke="#8b949e" stroke-width="2"/>
+      <circle cx="74" cy="58" r="7" fill="#010409" stroke="#8b949e" stroke-width="2"/>
+    </g>
+  </g>
+  <text x="248" y="118" font-family="Segoe UI, system-ui, sans-serif" font-size="56" font-weight="800" fill="#e6edf3">ec<tspan fill="url(#accent)">_garage</tspan></text>
+  <text x="250" y="162" font-family="Segoe UI, system-ui, sans-serif" font-size="22" font-weight="600" fill="#8b949e" letter-spacing="4">GARAGE · FIVEM · LAND · LUFT · WASSER</text>
+  <text x="250" y="210" font-family="Segoe UI, system-ui, sans-serif" font-size="16" fill="#5f6b7c">Creator · DB-Sync · Impound · ox_target · EC Chat Theme</text>
+</svg>
