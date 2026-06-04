@@ -1,4 +1,3 @@
-ECGarage = ECGarage or {}
 ECGarage.Bridge = ECGarage.Bridge or {}
 
 local function detectFramework()

@@ -1,14 +1,5 @@
 --- Garagen öffnen (Target am Prop / optional Marker)
 
-function ECGarage.FindGarageById(id)
-    for _, garage in ipairs(GarageSeed or {}) do
-        if garage.id == id then
-            return garage
-        end
-    end
-    return nil
-end
-
 function ECGarage.Client.OpenGarageAt(garage)
     if not garage or ECGarage.UI.IsOpen() then
         return

@@ -1,4 +1,4 @@
-ECGarage = ECGarage or {}
+ECGarage.Server = ECGarage.Server or {}
 
 local ESX_TYPE_TO_CATEGORY = {
     car = 'land',

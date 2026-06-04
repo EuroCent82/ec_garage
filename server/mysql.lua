@@ -1,4 +1,3 @@
-ECGarage = ECGarage or {}
 ECGarage.MySQL = ECGarage.MySQL or {}
 
 local function flavour()

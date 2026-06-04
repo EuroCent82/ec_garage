@@ -1,4 +1,3 @@
-ECGarage = ECGarage or {}
 ECGarage.UI = ECGarage.UI or {}
 
 local nuiOpen = false

@@ -1,4 +1,3 @@
-ECGarage = ECGarage or {}
 ECGarage.Target = ECGarage.Target or {}
 
 local registered = {}

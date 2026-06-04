@@ -1,5 +1,14 @@
 --- Garagen-Daten für Client + NUI (GarageSeed / später DB)
 
+function ECGarage.FindGarageById(id)
+    for _, garage in ipairs(GarageSeed or {}) do
+        if garage.id == id then
+            return garage
+        end
+    end
+    return nil
+end
+
 function ECGarage.GarageToNui(g)
     local prop = g.prop
     local propNui = nil
