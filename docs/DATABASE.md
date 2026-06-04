@@ -54,4 +54,4 @@ npm run db:inspect
 & "C:\laragon\bin\mysql\mysql-8.4.7-winx64\bin\mysql.exe" -u root esxlegacy_f9e16f -e "UPDATE owned_vehicles SET parking='wuerfelpark', stored=1 WHERE plate='QOB 772';"
 ```
 
-In `config.lua`: `Config.Database = 'esxlegacy_f9e16f'` (oder oxmysql-Connection-String deines Servers).
+MySQL-Verbindung kommt vom Server (**oxmysql** / `mysql_connection_string` in `server.cfg` oder txAdmin) — nicht aus `config.lua`.

@@ -405,14 +405,15 @@ function showToast(message, type = 'info') {
 function openGarage(mode) {
   if (mode) setUiMode(mode);
   $('#app').classList.remove('hidden');
-  $('#preview-menu').classList.add('preview-menu--open');
   render();
 }
 
 function closeGarage() {
   $('#app').classList.add('hidden');
-  $('#preview-menu').classList.remove('preview-menu--open');
   closeRenameModal();
+  if (window.EC_NUI?.isEmbed) {
+    window.parent.postMessage({ action: 'nuiClose', screen: 'garage' }, '*');
+  }
 }
 
 function openRenameModal(id) {
@@ -526,10 +527,6 @@ function init() {
   $('#lot-filter').addEventListener('change', (e) => {
     state.lotFilter = e.target.value;
     render();
-  });
-
-  $$('.preview-btn').forEach((btn) => {
-    btn.addEventListener('click', () => openGarage(btn.dataset.mode));
   });
 
   $('#vehicle-grid').addEventListener('click', (e) => {

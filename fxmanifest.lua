@@ -7,7 +7,7 @@ author 'EuroC'
 version '0.0.1'
 lua54 'yes'
 
-ui_page 'web/index.html'
+ui_page 'web/nui.html'
 
 shared_scripts {
     'shared/init.lua',
@@ -16,11 +16,16 @@ shared_scripts {
 }
 
 files {
+    'web/nui.html',
     'web/index.html',
     'web/creator.html',
+    'web/preview.html',
     'web/css/style.css',
     'web/css/creator.css',
     'web/css/icons.css',
+    'web/css/nui.css',
+    'web/js/nui-env.js',
+    'web/js/nui.js',
     'web/js/icons.js',
     'web/js/app.js',
     'web/js/creator.js',
@@ -31,8 +36,11 @@ files {
     'sql/seed_wuerfelpark.sql',
 }
 
+client_scripts {
+    'client/ui.lua',
+    'client/garage.lua',
+}
+
 server_scripts {
     'server/db_check.lua',
 }
-
--- client_scripts { 'client/*.lua' }

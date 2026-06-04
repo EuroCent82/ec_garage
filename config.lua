@@ -3,9 +3,6 @@ Config = {}
 --- auto | esx | qbcore | qbox
 Config.Framework = 'auto'
 
---- MySQL-Datenbankname (Laragon-Dev: esxlegacy_f9e16f)
-Config.Database = 'esxlegacy_f9e16f'
-
 --- Framework-Fahrzeugtabellen (nur lesen/schreiben Bestand)
 Config.VehicleTables = {
     esx = 'owned_vehicles',

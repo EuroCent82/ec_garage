@@ -502,6 +502,9 @@ function openCreator() {
 function closeCreator() {
   closePlacement();
   $('#creator').classList.add('hidden');
+  if (window.EC_NUI?.isEmbed) {
+    window.parent.postMessage({ action: 'nuiClose', screen: 'creator' }, '*');
+  }
 }
 
 function initStaticIcons() {
@@ -529,7 +532,11 @@ function init() {
 
   $('#garage-list').addEventListener('click', (e) => {
     const item = e.target.closest('.garage-item');
-    if (item) { state.activeGarageId = parseInt(item.dataset.id, 10); renderStep(); }
+    if (item) {
+      const id = item.dataset.id;
+      state.activeGarageId = /^\d+$/.test(id) ? parseInt(id, 10) : id;
+      renderStep();
+    }
   });
 
   $('#btn-new-garage').onclick = () => {
@@ -542,7 +549,6 @@ function init() {
   };
 
   $('#btn-close').onclick = closeCreator;
-  $('#preview-open').onclick = openCreator;
   $('#btn-save').onclick = saveGarage;
   $('#btn-export').onclick = exportJson;
   $('#placement-cancel').onclick = closePlacement;
