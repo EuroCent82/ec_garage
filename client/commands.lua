@@ -62,8 +62,8 @@ RegisterCommand('garageui', function(_, args)
         ECGarage.UI.Close()
         return
     end
-    ECGarage.UI.OpenGarage({
-        mode = args[1] or 'land',
-        garageName = 'Garage',
-    })
+    local garage = ECGarage.FindGarageById(Config.DefaultGarageId) or (GarageSeed and GarageSeed[1])
+    if garage then
+        ECGarage.Client.OpenGarageAt(garage)
+    end
 end, false)

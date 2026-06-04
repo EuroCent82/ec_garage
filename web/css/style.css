@@ -158,6 +158,21 @@ body::before {
   animation: fadeIn 0.3s ease;
 }
 
+html.nui-embed .garage {
+  position: relative;
+  inset: auto;
+  width: 100%;
+  height: 100%;
+  animation: none;
+}
+
+html.nui-embed .garage-panel {
+  width: 100%;
+  height: 100%;
+  max-width: none;
+  max-height: none;
+}
+
 @keyframes fadeIn {
   from { opacity: 0; }
   to { opacity: 1; }

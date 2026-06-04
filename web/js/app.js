@@ -70,8 +70,10 @@ const IMPOUND_LOTS = [
   { id: 'paleto', name: 'Paleto Bay Hafen-Impound' },
 ];
 
+const isGameNui = window.EC_NUI?.isEmbed || typeof GetParentResourceName === 'function';
+
 const state = {
-  vehicles: [...MOCK_VEHICLES],
+  vehicles: isGameNui ? [] : [...MOCK_VEHICLES],
   uiMode: 'land',
   activeTab: 'parked',
   filter: 'all',
@@ -84,8 +86,8 @@ const $ = (sel) => document.querySelector(sel);
 const $$ = (sel) => document.querySelectorAll(sel);
 
 const TAB_LABELS = {
-  parked: { title: 'Keine Fahrzeuge eingeparkt', text: 'Parke ein Fahrzeug ein, um es hier zu sehen.' },
-  out: { title: 'Keine ausgeparkten Fahrzeuge', text: 'Alle Fahrzeuge sind aktuell eingeparkt.' },
+  parked: { title: 'Keine Fahrzeuge in dieser Garage', text: 'Du hast hier nichts eingeparkt.' },
+  out: { title: 'Keine ausgeparkten Fahrzeuge', text: 'Kein Fahrzeug dieser Garage ist gerade draußen.' },
 };
 
 const CATEGORY_LABELS = { land: 'Land', air: 'Luft', water: 'Wasser' };
@@ -555,7 +557,7 @@ function init() {
   window.addEventListener('message', (event) => {
     const data = event.data;
     if (data?.action === 'open' || data?.action === 'openGarage') {
-      if (data.vehicles) state.vehicles = data.vehicles;
+      state.vehicles = Array.isArray(data.vehicles) ? data.vehicles : [];
       openGarage(data.mode || 'land', data.garageName);
     }
     if (data?.action === 'close') closeGarage();

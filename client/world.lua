@@ -16,6 +16,8 @@ local function clearProp(entity)
 end
 
 local function refreshWorld()
+    ECGarage.Target.ClearAll()
+
     for _, handle in pairs(blips) do
         clearBlip(handle)
     end
@@ -58,10 +60,16 @@ local function refreshWorld()
                     SetEntityAsMissionEntity(obj, true, true)
                     props[garage.id] = obj
                     SetModelAsNoLongerNeeded(model)
+
+                    if Config.InteractMode ~= 'marker' then
+                        ECGarage.Target.Register(garage, obj)
+                    end
                 end
             else
                 print(('^3[ec_garage]^7 Unbekanntes Prop-Modell: %s'):format(prop.model))
             end
+        elseif Config.InteractMode ~= 'marker' and pt then
+            ECGarage.Target.Register(garage, nil)
         end
     end
 end
@@ -87,4 +95,5 @@ AddEventHandler('onResourceStop', function(res)
     for _, entity in pairs(props) do
         clearProp(entity)
     end
+    ECGarage.Target.ClearAll()
 end)

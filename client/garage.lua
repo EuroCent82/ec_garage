@@ -1,7 +1,35 @@
---- Garagen-Interaktion (Seed / später DB)
+--- Garagen öffnen (Target am Prop / optional Marker)
 
-local interactDist = 2.0
-local markerDist = 18.0
+function ECGarage.FindGarageById(id)
+    for _, garage in ipairs(GarageSeed or {}) do
+        if garage.id == id then
+            return garage
+        end
+    end
+    return nil
+end
+
+function ECGarage.Client.OpenGarageAt(garage)
+    if not garage or ECGarage.UI.IsOpen() then
+        return
+    end
+
+    TriggerServerEvent('ec_garage:requestVehicles', garage.id, garage.type or 'land')
+end
+
+RegisterNetEvent('ec_garage:receiveVehicles', function(garageId, vehicles)
+    local garage = ECGarage.FindGarageById(garageId)
+    if not garage then
+        return
+    end
+
+    ECGarage.UI.OpenGarage({
+        mode = garage.type or 'land',
+        garageName = garage.name,
+        garageId = garage.id,
+        vehicles = vehicles or {},
+    })
+end)
 
 local function showHelp(text)
     BeginTextCommandDisplayHelp('STRING')
@@ -10,6 +38,13 @@ local function showHelp(text)
 end
 
 CreateThread(function()
+    if Config.InteractMode == 'target' then
+        return
+    end
+
+    local interactDist = 2.0
+    local markerDist = 18.0
+
     while true do
         local sleep = 800
         local ped = PlayerPedId()
@@ -32,11 +67,7 @@ CreateThread(function()
                         if dist < interactDist then
                             showHelp('Drücke ~INPUT_CONTEXT~ für ~b~' .. (garage.blipLabel or garage.name) .. '~s~')
                             if IsControlJustReleased(0, 38) then
-                                ECGarage.UI.OpenGarage({
-                                    mode = garage.type or 'land',
-                                    garageName = garage.name,
-                                    garageId = garage.id,
-                                })
+                                ECGarage.Client.OpenGarageAt(garage)
                             end
                         end
                     end

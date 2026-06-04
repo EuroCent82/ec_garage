@@ -40,11 +40,15 @@ files {
 client_scripts {
     'client/ui.lua',
     'client/commands.lua',
+    'client/target.lua',
     'client/world.lua',
     'client/garage.lua',
     'client/creator_bridge.lua',
 }
 
 server_scripts {
+    'server/mysql.lua',
+    'server/bridge.lua',
+    'server/vehicles.lua',
     'server/db_check.lua',
 }

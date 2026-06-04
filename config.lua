@@ -19,6 +19,14 @@ Config.EsxPoundColumn = 'pound'
 Config.QbGarageColumn = 'garage'
 Config.QbStateColumn = 'state'
 
+--- Interaktion: target (ox_target / qb-target am Prop) | marker (E + Marker) | both
+Config.InteractMode = 'target'
+
+--- auto | ox_target | qb-target | none
+Config.Target = 'auto'
+Config.TargetDistance = 2.5
+Config.TargetLabel = 'Garage öffnen'
+
 --- Chat-Vorschläge bei /befehl (ec_chat oder chat:addSuggestion)
 Config.ChatSuggestions = true
 
